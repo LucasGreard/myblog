@@ -17,7 +17,7 @@ $postManager = new PostManager(); //Initialise le PostManager
 $commentManager = new CommentManager(); //Initialise le CommentManager
 $userManager = new UserManager(); //Initialise le UserManager
 $homeManager = new HomeManager(); //Initialise le HomeManager
-$contactManager = new ContactManager(); //Initialise le contactManager
+$contactManager = new ContactManager(); //Initialise le contactManager 
 
 try {
     if (!isset($_GET['action'])) {
@@ -108,7 +108,7 @@ try {
             break;
 
         case 'messageSend':
-            messageSend($contactManager); //Envoi un message
+            messageSend($contactManager); //Envoi un message à l'admin
             break;
         case 'userComments':
             userComments($commentManager); //Affiche une page avec tous les commentaires d'un utilisateur

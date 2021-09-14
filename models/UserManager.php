@@ -51,7 +51,7 @@ class UserManager extends Dbconnect
                 $req = $this->dbConnect->prepare('
                         SELECT user_Password 
                         FROM user 
-                        WHERE user_Mail=:user_Mail 
+                        WHERE user_Mail=:user_Mail
                         
                     ');
                 $req->execute(
@@ -69,7 +69,7 @@ class UserManager extends Dbconnect
                     $req = $this->dbConnect->prepare('
                         SELECT * 
                         FROM user 
-                        WHERE user_Mail=:user_Mail       
+                        WHERE user_Mail=:user_Mail      
                     ');
                     $req->execute(
                         [
@@ -203,7 +203,7 @@ class UserManager extends Dbconnect
             $req = '
             SELECT *
             FROM user 
-            WHERE user_State = "Guest" OR user_State ="Moderator"
+            WHERE user_State = "Guest" OR user_State ="Moderator" OR user_State ="User"
             ORDER BY user_Lastname ASC
             ';
             $db = $this->dbConnect();
@@ -226,6 +226,22 @@ class UserManager extends Dbconnect
             ]
         );
         $_SESSION['userManage'] = 'User was delete ! </a>';
+        header("Location: index.php?action=listUserManage");
+    }
+    public function acceptUser()
+    {
+        $idUser = htmlentities($_POST['idUser']);
+        $req = $this->dbConnect->prepare('
+            UPDATE user
+            SET user_State = "User"
+            WHERE id = :id
+        ');
+        $req->execute(
+            [
+                'id' => $idUser
+            ]
+        );
+        $_SESSION['userManage'] = 'User was accept ! </a>';
         header("Location: index.php?action=listUserManage");
     }
 }

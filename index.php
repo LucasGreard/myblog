@@ -33,7 +33,7 @@ try {
             break;
 
         case 'listComment':
-            listComment($commentManager); // Affiche les commentaires liés au post choisi
+            listComment($commentManager, $postManager); // Affiche les commentaires liés au post choisi
             break;
 
         case 'userLogOn':
@@ -60,14 +60,6 @@ try {
             addUserPost($postManager); //Ajoute d'un post par l'utilisateur
             break;
 
-        case 'deleteUserPost':
-            deleteUserPost($postManager); //Suppression d'un post pour un utilisateur
-            break;
-
-        case 'modifyUserPost':
-            modifyUserPost($postManager); //Modification d'un post par un utilisateur
-            break;
-
         case 'listPostValidation':
             listPostValidation($postManager); //Liste les posts à valider
             break;
@@ -76,7 +68,7 @@ try {
             break;
 
         case 'addUserComment':
-            addUserComment($commentManager); //Ajoute un commentaire
+            addUserComment($commentManager, $postManager); //Ajoute un commentaire
             break;
 
         case 'modifyCoorUser':
@@ -99,8 +91,8 @@ try {
             listUserManage($userManager); //Liste les utilisateurs 
             break;
 
-        case 'deleteUser':
-            deleteUser($userManager); //Supprime un utilisateur
+        case 'ManageUser':
+            ManageUser($userManager); //Supprime un utilisateur
             break;
 
         case 'contactMe':
@@ -110,10 +102,27 @@ try {
         case 'messageSend':
             messageSend($contactManager); //Envoi un message à l'admin
             break;
+
         case 'userComments':
             userComments($commentManager); //Affiche une page avec tous les commentaires d'un utilisateur
+            break;
+
+        case 'managePostAdmin':
+            managePostAdmin($postManager);
+            break;
+
+        case 'modifyPostAdmin':
+            modifyPostAdmin($postManager);
+            break;
+
+        case 'addPostAdmin':
+            addUserPost($postManager);
+            break;
+
         default:
             displayHome($homeManager); //Affiche l'accueil
+            break;
+
     endswitch;
 } catch (Exception $e) {
     echo 'Erreur : ' . $e->getMessage();

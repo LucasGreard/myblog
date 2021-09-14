@@ -29,7 +29,7 @@ class UserListManageView extends _DefaultView
     }
 
 
-    public static function render($userManager, $post_Id = null): void
+    public static function render($userManager, $post_Id = null, $postManager = null): void
     {
         $obj = new self($userManager);
         echo $obj->rendering;
@@ -39,9 +39,16 @@ class UserListManageView extends _DefaultView
     private function _getHtmlBefore(): void
     {
         $this->htmlBefore = '
-        <header>
+        <header class="py-5 bg-light border-bottom mb-4">
             <div class="container">
-                <div class="row">';
+                <div class="text-center my-5">
+                    <h1 class="fw-bolder">God Mod for User\'s Life !</h1>
+                    <p class="lead mb-0 fst-italic">As an administrator, You are in control of a user\'s life or death ! What joy !</p>
+                </div>
+            </div>
+        </header>
+        <div class="containter">
+            <div class="row">';
         if (isset($_SESSION['userManage'])) :
             $this->content .= '<h4>' . $_SESSION['userManage'] . '</h4>';
             unset($_SESSION['userManage']);
@@ -59,21 +66,24 @@ class UserListManageView extends _DefaultView
 
             $this->content .=
                 ' 
-                    <div class="col-lg-6">
-                        <ul class="list-group">
-        
-                                <li class="list-group-item active">' . $data['user_Lastname'] . '</li>
-                                <li class="list-group-item disabled">' . $data['user_Firstname'] . '</li>
-                                <li class="list-group-item disabled">' . $data['user_Mail'] . '</li>
-                                <li class="list-group-item disabled">' . $data['user_Phone'] . '</li>
-                                <li class="list-group-item disabled">' . $data['user_State'] . '</li>
-                                <form action="index.php?action=deleteUser" method="POST">
-                                    <input name="idUser" type="hidden" value="' . $data['id'] . '">
-                                    <button type="submit" class="btn btn-danger" name="deleteUser">Delete</button>
-                                </form>
-
-                            </ul>
-                        </div>';
+                <div class="col-lg-4 mb-2">
+                    <ul class="list-group text-center">
+                        <li class="list-group-item list-group-item-dark">Name : ' . $data['user_Lastname'] . ' ' . $data['user_Firstname'] . '</li>
+                        <li class="list-group-item disabled">Mail : ' . $data['user_Mail'] . '</li>
+                        <li class="list-group-item disabled">Phone : ' . $data['user_Phone'] . '</li>
+                        <li class="list-group-item disabled">State : ' . $data['user_State'] . '</li>
+                        <form action="index.php?action=ManageUser" method="POST">
+                            <input name="idUser" type="hidden" value="' . $data['id'] . '">
+                            <button type="submit" class="btn btn-outline-danger" name="deleteUser">Delete</button>';
+            if ($data['user_State'] == "Guest") :
+                $this->content .= '
+                            <button type="submit" class="btn btn-outline-success" name="acceptUser">Accept</button>';
+            endif;
+            $this->content .= '
+                        </form>
+                    </ul>
+                </div>
+                ';
         endwhile;
     }
 

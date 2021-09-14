@@ -54,10 +54,12 @@ class PostManager extends Dbconnect
 
     public function addUserPost()
     {
-        if (isset($_POST['headingPostUser']) && isset($_POST['contentPostUser']) && $_POST['headingPostUser'] != "" && $_POST['contentPostUser'] != "") :
-            $postHeading = htmlentities($_POST['headingPostUser']);
+        if (isset($_POST['addHeadingPost']) && isset($_POST['addContentPost']) && $_POST['addHeadingPost'] != "" && $_POST['addContentPost'] != "") :
+            $postHeading = htmlentities($_POST['addHeadingPost']);
+            $postChapo = htmlentities($_POST['addChapoPost']);
             $postAuthor = $_SESSION['userLastName'] . " " . $_SESSION['userFirstName'];
-            $postContent = htmlentities($_POST['contentPostUser']);
+            $postContent = htmlentities($_POST['addContentPost']);
+            $postCategorie = htmlentities($_POST['selectCategorieAddPost']);
             $postUserId = $_SESSION['idUser'];
             if ($_SESSION['userState'] === "Admin") :
                 $postValidation = "Yes";
@@ -65,29 +67,31 @@ class PostManager extends Dbconnect
                 $postValidation = "In Progress";
             endif;
             $req = $this->dbConnect->prepare('
-                    INSERT INTO post ( post_Heading, post_Author, post_Content, post_Validation, user_Id)
-                    VALUES ( :post_heading, :post_author, :post_content, :validation_id, :user_id)
+                    INSERT INTO post ( post_Heading, post_Chapo, post_Author, post_Content, post_Category, post_Validation, user_Id)
+                    VALUES ( :post_heading, :post_Chapo, :post_author, :post_content, :post_Category, :validation_id, :user_id)
                 ');
             $req->execute(
                 [
                     'post_heading' => $postHeading,
+                    'post_Chapo' => $postChapo,
                     'post_author' => $postAuthor,
                     'post_content' => $postContent,
+                    'post_Category' => $postCategorie,
                     'validation_id' => $postValidation,
                     'user_id' => $postUserId
                 ]
             );
 
             $_SESSION['postAdd'] = 'Your post is add ! </a>';
-            header("Location: index.php?action=listUserPosts");
+            header("Location: index.php?action=managePostAdmin");
         else :
             $_SESSION['postAdd'] = 'Your post isn\'t add ';
-            header("Location: index.php?action=listUserPosts");
+            header("Location: index.php?action=managePostAdmin");
         endif;
     }
     public function deleteUserPost()
     {
-        $idPostUser = htmlentities($_POST['idPostUser']);
+        $idPostUser = htmlentities($_POST['idPostAdmin']);
         $req = $this->dbConnect->prepare('
             DELETE FROM post
             WHERE id = :id
@@ -98,11 +102,12 @@ class PostManager extends Dbconnect
             ]
         );
         $_SESSION['postAdd'] = 'Your post is delete ! </a>';
-        header("Location: index.php?action=listUserPosts");
+        header("Location: index.php?action=managePostAdmin");
     }
     public function listUserPost()
     {
-        $idPostUser = htmlentities($_POST['idPostUser']);
+
+        $idPostUser = htmlentities($_POST['idPostAdmin']);
         $req = $this->dbConnect->prepare('
         SELECT *
         FROM post 
@@ -115,23 +120,42 @@ class PostManager extends Dbconnect
         );
         return $req;
     }
+    public function listUniquePost($post_id)
+    {
+        $req = $this->dbConnect->prepare('
+        SELECT *
+        FROM post 
+        WHERE id = :id 
+        ');
+        $req->execute(
+            [
+                "id" => $post_id
+            ]
+        );
+        return $req;
+    }
     public function modifyUserPost()
     {
-        $idPostUser = htmlentities($_POST['idPostUser']);
-        $headingPostModify = htmlentities($_POST['postHeadingUserModify']);
-        $contentPostModify = htmlentities($_POST['postContentUserModify']);
+        $idPostUser = htmlentities($_POST['idPostAdmin']);
+        $headingPostModify = htmlentities($_POST['headingPostModify']);
+        $contentPostModify = htmlentities($_POST['contentPostModify']);
+        $authorPostModify = htmlentities($_POST['authorPostModify']);
+        $chapoPostModify = htmlentities($_POST['chapoPostModify']);
         $req = $this->dbConnect->prepare('
         UPDATE post
-        SET post_Date_Modif = NOW(),   post_Heading  = :post_heading, post_Content = :post_content
+        SET post_Date_Modif = NOW(),   post_Heading  = :post_heading, post_Chapo = :post_chapo, post_Content = :post_content, post_Author = :post_author
         WHERE id = :id
         ');
         $req->execute(
             [
                 "post_heading" => $headingPostModify,
                 "post_content" => $contentPostModify,
+                "post_author" => $authorPostModify,
+                "post_chapo" => $chapoPostModify,
                 "id" => $idPostUser
             ]
         );
+        $_SESSION['postModify'] = "Your post has been modified";
         return $req;
     }
 
@@ -166,5 +190,26 @@ class PostManager extends Dbconnect
             );
             return $req;
         endif;
+    }
+    public function postListCategory()
+    {
+        $req = '
+            SELECT DISTINCT post_Category 
+            FROM post
+            WHERE post_Validation = "Yes"
+            ';
+        $db = $this->dbConnect();
+        return $db->query($req);
+    }
+    public function lastPostCreate()
+    {
+        $req = '
+            SELECT  *
+            FROM post
+            ORDER BY post_Date_Add DESC
+            LIMIT 1
+            ';
+        $db = $this->dbConnect();
+        return $db->query($req);
     }
 }

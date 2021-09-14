@@ -28,7 +28,7 @@ class userCommentsView extends _DefaultView
     }
 
 
-    public static function render($commentManager, $post_Id = null): void
+    public static function render($commentManager, $post_Id = null, $postManager = null): void
     {
         $obj = new self($commentManager);
         echo $obj->rendering;
@@ -38,9 +38,21 @@ class userCommentsView extends _DefaultView
     private function _getHtmlBefore(): void
     {
         $this->htmlBefore = '
-        <section>
+        <header class="py-5 bg-light border-bottom mb-4">
             <div class="container">
-                <div class="row">';
+                <div class="text-center my-5">
+                    <h1 class="fw-bolder">Look at the status of your comments !</h1>
+                    <p class="lead mb-0 fst-italic">Some of your comments must be validated by an Admin !</p>
+                </div>
+            </div>
+        </header>
+        <div class="containter">
+            <div class="row">
+                ';
+        if (isset($_SESSION['commentManage'])) :
+            $this->content .= '<h4>' . $_SESSION['commentManage'] . '</h4>';
+            unset($_SESSION['commentManage']);
+        endif;
     }
 
 
@@ -51,24 +63,28 @@ class userCommentsView extends _DefaultView
 
         while ($data = $userListComments->fetch()) :
             $this->content .= '
-                   <div class="col-lg-6">
-                        <ul class="list-group">
-
-                            <li class="list-group-item active">' . $data['comment_Date_Add'] . ' </li>
-                            <li class="list-group-item disabled">' . substr($data['comment_Content'], 0, 200) . ' ... </li>
-                            <li class="list-group-item disabled">' . $data['comment_Validation'] . ' </li>
-                            <a href="index.php?action=listComment&id=' . $data['post_id'] . ' " class="list-group-item active">Voir le post en entier</a>
-
-                        </ul>
-                    </div>';
+                <div class="col-4 mb-2">
+                    <ul class="list-group text-center">
+                        
+                        <li class="list-group-item list-group-item-dark">Message : ' . substr($data['comment_Content'], 0, 200) . ' ... </li>
+                        <li class="list-group-item disabled">Date : ' . $data['comment_Date_Add'] . ' </li>
+                        <li class="list-group-item disabled">Status : ' . $data['comment_Validation'] . ' </li>
+                        <a href="index.php?action=listComment&id=' . $data['post_id'] . ' " class="btn btn-outline-dark">Voir le post en entier</a>';
+            if (($_SESSION['userLastName'] . " " . $_SESSION['userFirstName']) === $data['comment_Author']) :
+                $this->content .= ' <a href="index.php?action=deleteUserComment&id=' . $data['id'] . ' " class="btn btn-outline-danger">Delete your comment</a>';
+            endif;
+            $this->content .= '
+                    </ul>
+                </div>
+                  ';
         endwhile;
     }
 
     private function _getHtmlAfter()
     {
         return '
-                </div>
             </div>
-        </section>';
+        </div>
+';
     }
 }

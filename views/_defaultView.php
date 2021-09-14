@@ -6,16 +6,17 @@ use Models\PostManager;
 class _DefaultView
 {
     private $homeManager;
-
+    private $postManager;
     private $htmlBefore;
     private $content;
     private $htmlAfter;
     public $rendering;
 
-    private function __construct(HomeManager $homeManager, $post_Id)
+    private function __construct(HomeManager $homeManager = null, $post_Id = null, PostManager $postManager = null)
     {
 
         $this->homeManager = $homeManager;
+        $this->postManager = $postManager;
         $this->_getHtmlBefore();
         $this->_getContent($homeManager, $post_Id);
         $this->htmlAfter = $this->_getHtmlAfter();
@@ -181,9 +182,9 @@ class _DefaultView
         return $footer;
     }
 
-    public static function render($homeManager, $post_Id = null, $postManager): void
+    public static function render($homeManager, $post_Id = null, $postManager = null): void
     {
-        $obj = new self($homeManager, $post_Id);
+        $obj = new self($homeManager, $post_Id, $postManager);
         echo $obj->rendering;
     }
 

@@ -31,7 +31,7 @@ use Models\ContactManager;
 
 function displayHome(HomeManager $homeManager) //Accède à la page Accueil
 {
-    _DefaultView::render($homeManager, $commentManager = null, $post_id = null);
+    _DefaultView::render($homeManager);
 }
 //END : Fonction principale
 

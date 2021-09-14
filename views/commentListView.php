@@ -32,7 +32,7 @@ class commentListView extends _DefaultView
     }
 
 
-    public static function render($commentManager, $post_Id = null, $postManager): void
+    public static function render($commentManager, $post_Id = null, $postManager = null): void
     {
         $obj = new self($commentManager, $post_Id, $postManager);
         echo $obj->rendering;

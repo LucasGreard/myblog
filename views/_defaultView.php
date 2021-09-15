@@ -52,8 +52,10 @@ class _DefaultView
                     <div class="container">
                         <a class="navbar-brand" href="index.php">Hi, 
                         ';
+
         if (isset($_SESSION['userFirstName'])) :
-            $header .= $_SESSION['userFirstName'] . " !";
+            $userFirstName = htmlentities($_SESSION['userFirstName']);
+            $header .= $userFirstName . " !";
         else :
             $header .= "World !";
         endif;
@@ -72,11 +74,13 @@ class _DefaultView
                                 <li class="nav-item">
                                     <a class="nav-link" href="index.php?action=contactMe">Contact me</a>
                                 </li>';
-        if (isset($_SESSION['userLastName'])) :
 
+        if (isset($_SESSION['userLastName']) && isset($_SESSION['userFirstName'])) :
+            $userLastName = htmlentities($_SESSION['userLastName']);
+            $userFirstName = htmlentities($_SESSION['userFirstName']);
             $header .= '        <li class="nav-item dropdown">
                                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                        ' . $_SESSION['userFirstName'] . " " . $_SESSION['userLastName'] . '
+                                        ' . $userFirstName . " " . $userLastName . '
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                         <a class="dropdown-item" href="index.php?action=userLogOn">My settings</a>';
@@ -84,25 +88,28 @@ class _DefaultView
             // A ajouter si les USERS peuvent ajouter un post   
             //<div class="dropdown-divider"></div>
             // <a class="dropdown-item" href="index.php?action=listUserPosts">See your posts</a> 
-            if ($_SESSION['userState'] != "Guest") :
-                $header .= '                <a class="dropdown-item" href="index.php?action=userComments">My comments</a>';
-            endif;
-            if (isset($_SESSION['userState']) && $_SESSION['userState'] === "Admin") :
 
-                //A ajouter si les USERS peuvent ajouter un post
-                // $header .= '<a class="dropdown-item" href="index.php?action=listPostValidation">See POST to manage</a>
-                //             <div class="dropdown-divider"></div>';
+            if (isset($_SESSION['userState'])) :
+                $userState = htmlentities($_SESSION['userState']);
+                if ($userState != "Guest") :
+                    $header .= '                <a class="dropdown-item" href="index.php?action=userComments">My comments</a>';
+                endif;
+                if ($userState === "Admin") :
+                    //A ajouter si les USERS peuvent ajouter un post
+                    // $header .= '<a class="dropdown-item" href="index.php?action=listPostValidation">See POST to manage</a>
+                    //             <div class="dropdown-divider"></div>';
 
 
-                $header .= '            <div class="dropdown-divider"></div>
+                    $header .= '            <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="index.php?action=listCommentValidation">Manage Comments</a>
                                         ';
-                $header .= '            <a class="dropdown-item" href="index.php?action=listUserManage">Manage Users</a>
+                    $header .= '            <a class="dropdown-item" href="index.php?action=listUserManage">Manage Users</a>
                                         <div class="dropdown-divider"></div>   
                                         ';
-                $header .= '            <a class="dropdown-item" href="index.php?action=managePostAdmin">Manage Posts</a>
+                    $header .= '            <a class="dropdown-item" href="index.php?action=managePostAdmin">Manage Posts</a>
                                         <div class="dropdown-divider"></div>   
                                         ';
+                endif;
             endif;
 
             $header .= '                <a class="dropdown-item link-danger" href="index.php?action=deleteSession">Disconnect</a>
@@ -153,9 +160,10 @@ class _DefaultView
                         <h3 class="text-white">About You</h3>
                         <ul class="list-group">';
         if (isset($_SESSION['VerifConnection'])) :
+            $userLastName = htmlentities($_SESSION['userLastName']);
             $footer .= '
                             <p>
-                                <a class="btn btn-outline-info" href="index.php?action=userLogOn">My Account,' . $_SESSION['userLastName'] . '</a>
+                                <a class="btn btn-outline-info" href="index.php?action=userLogOn">My Account,' . $userLastName . '</a>
                             </p>
                             <p>
                                 <a class="btn btn-outline-danger" href="index.php?action=deleteSession">Disconnect</a>

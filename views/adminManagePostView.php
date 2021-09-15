@@ -44,8 +44,10 @@ class ManagePostAdminView extends _DefaultView
                 <div class="text-center my-5">
                     <h1 class="fw-bolder">All post I found</h1>
                     <p class="lead mb-0 fst-italic">Manage your post as you want ! Like a boss !</p>';
+
         if (isset($_SESSION['postAdd'])) :
-            $this->htmlBefore .= $_SESSION['postAdd'];
+            $postAdd = htmlentities($_SESSION['postAdd']);
+            $this->htmlBefore .= $postAdd;
             unset($_SESSION['postAdd']);
         endif;
         $this->htmlBefore .= '

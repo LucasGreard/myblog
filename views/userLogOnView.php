@@ -47,8 +47,10 @@ class UserLogOnView extends _DefaultView
                     <h1 class="fw-bolder">If it\'s you, it\'s your contact details :)</h1>
                     <p class="lead mb-0 fst-italic">Modify what you want !</p>
                     <p class="lead mb-0 fst-italic">';
+
             if (isset($_SESSION['modifCoordUserValide'])) :
-                $this->htmlBefore .= $_SESSION['modifCoordUserValide'];
+                $modifCoordUserValide = htmlentities($_SESSION['modifCoordUserValide']);
+                $this->htmlBefore .= $modifCoordUserValide;
                 unset($_SESSION['modifCoordUserValide']);
             endif;
 
@@ -78,6 +80,12 @@ class UserLogOnView extends _DefaultView
     {
         $this->content = "";
         if (isset($_SESSION['VerifConnection'])) :
+            $userLastName = htmlentities($_SESSION['userLastName']);
+            $userFirstName = htmlentities($_SESSION['userFirstName']);
+            $userPhone = htmlentities($_SESSION['userPhone']);
+            $userMail = htmlentities($_SESSION['userMail']);
+            $userState = htmlentities($_SESSION['userState']);
+
             $this->content .= '
                 <div class="col-3">
                     <img src="public/img/thumbnail/karl-tomas-apresentacao-fornite.jpg" alt="..." class="img-thumbnail">
@@ -88,24 +96,24 @@ class UserLogOnView extends _DefaultView
                     
                             <div class="input-group-prepend text-center p-1">
                                 Last Name
-                                <input name="userLastName" class="form-control" value="' . $_SESSION['userLastName'] . '" type="text">
+                                <input name="userLastName" class="form-control" value="' . $userLastName . '" type="text">
                             </div>
                             <div class="input-group-prepend text-center p-1">
                                 First Name
-                                <input name="userFirstName" class="form-control" value="' . $_SESSION['userFirstName'] . '" type="text">
+                                <input name="userFirstName" class="form-control" value="' . $userFirstName . '" type="text">
                             </div>
                             <div class="input-group-prepend text-center p-1">
                                 Phone Number
-                                <input name="userPhone" class="form-control" value="' . $_SESSION['userPhone'] . '" type="text">
+                                <input name="userPhone" class="form-control" value="' . $userPhone . '" type="text">
                             </div>
                             <div class="input-group-prepend text-center p-1">
                                 Email Address
-                                <input name="userMail" class="form-control" value="' . $_SESSION['userMail'] . '" type="email"> 
+                                <input name="userMail" class="form-control" value="' . $userMail . '" type="email"> 
                             </div>
                             
                             <div class="input-group text-center p-1">
                                 Status : 
-                                ' . $_SESSION['userState'] . ' 
+                                ' . $userState . ' 
                             </div>
                         </div>
                         <div class="row">
@@ -149,8 +157,10 @@ class UserLogOnView extends _DefaultView
                         <label class="form-check-label" for="exampleCheck1">Check me out</label>
                     </div>
                     ';
+
             if (isset($_SESSION['connexionLose'])) :
-                $this->content .= '<h5>' . $_SESSION['connexionLose'] . '</h5>';
+                $connexionLose = htmlentities($_SESSION['connexionLose']);
+                $this->content .= '<h5>' . $connexionLose . '</h5>';
                 unset($_SESSION['connexionLose']);
             endif;
             $this->content .= '

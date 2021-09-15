@@ -49,8 +49,10 @@ class userCommentsView extends _DefaultView
         <div class="containter">
             <div class="row">
                 ';
+
         if (isset($_SESSION['commentManage'])) :
-            $this->content .= '<h4>' . $_SESSION['commentManage'] . '</h4>';
+            $commentManage = htmlentities($_SESSION['commentManage']);
+            $this->content .= '<h4>' . $commentManage . '</h4>';
             unset($_SESSION['commentManage']);
         endif;
     }
@@ -70,13 +72,18 @@ class userCommentsView extends _DefaultView
                         <li class="list-group-item disabled">Date : ' . $data['comment_Date_Add'] . ' </li>
                         <li class="list-group-item disabled">Status : ' . $data['comment_Validation'] . ' </li>
                         <a href="index.php?action=listComment&id=' . $data['post_id'] . ' " class="btn btn-outline-dark">Voir le post en entier</a>';
-            if (($_SESSION['userLastName'] . " " . $_SESSION['userFirstName']) === $data['comment_Author']) :
-                $this->content .= ' <a href="index.php?action=deleteUserComment&id=' . $data['id'] . ' " class="btn btn-outline-danger">Delete your comment</a>';
-            endif;
-            $this->content .= '
+            if (isset($_SESSION['userLastName']) && isset($_SESSION['userFirstName'])) :
+                $userLastName = htmlentities($_SESSION['userLastName']);
+                $userFirstName = htmlentities($_SESSION['userFirstName']);
+                if (($userLastName . " " . $userFirstName) === $data['comment_Author']) :
+
+                    $this->content .= ' <a href="index.php?action=deleteUserComment&id=' . $data['id'] . ' " class="btn btn-outline-danger">Delete your comment</a>';
+                endif;
+                $this->content .= '
                     </ul>
                 </div>
                   ';
+            endif;
         endwhile;
     }
 

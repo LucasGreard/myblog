@@ -49,8 +49,10 @@ class UserListManageView extends _DefaultView
         </header>
         <div class="containter">
             <div class="row">';
+
         if (isset($_SESSION['userManage'])) :
-            $this->content .= '<h4>' . $_SESSION['userManage'] . '</h4>';
+            $userManage = htmlentities($_SESSION['userManage']);
+            $this->content .= '<h4>' . $userManage . '</h4>';
             unset($_SESSION['userManage']);
         endif;
     }

@@ -69,8 +69,10 @@ class PostListView extends _DefaultView
                                             <div class="text-muted fst-italic mb-2">Last modification on ' . $data['post_Date_Modif'] . '</div>
                                             <!-- Post categories-->
                                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">' . $data['post_Category'] . '</a>';
+
                 if (isset($_SESSION['postModify'])) :
-                    $this->content .= '<p>' . $_SESSION['postModify'] . '</p>';
+                    $postModify = htmlentities($_SESSION['postModify']);
+                    $this->content .= '<p>' . $postModify . '</p>';
                     unset($_SESSION['postModify']);
                 endif;
                 $this->content .=
@@ -95,12 +97,18 @@ class PostListView extends _DefaultView
                                             <div class="card-body">
                                                 <!-- Comment form-->
                                                 ';
-                if (isset($_SESSION['idUser']) && $_SESSION['userState'] != "Guest") :
-                    if (isset($_SESSION['commentAdd'])) :
-                        $this->content .= '<div class="text-center">' . $_SESSION['commentAdd'] . '</div>';
-                        unset($_SESSION['commentAdd']);
-                    endif;
-                    $this->content .= '
+
+
+
+                if (isset($_SESSION['idUser'])) :
+                    $userState = htmlentities($_SESSION['userState']);
+                    if ($userState != "Guest") :
+                        if (isset($_SESSION['commentAdd'])) :
+                            $commentAdd = htmlentities($_SESSION['commentAdd']);
+                            $this->content .= '<div class="text-center">' . $commentAdd . '</div>';
+                            unset($_SESSION['commentAdd']);
+                        endif;
+                        $this->content .= '
                                     
                                                 <form class="mb-4" method="POST" action="index.php?action=addUserComment&id=' . $data['id'] . '">
                                                     <input name="idCommentUser" type="hidden" value="' . $data['id'] . '">
@@ -109,18 +117,19 @@ class PostListView extends _DefaultView
                                                         <button type="submit" class="btn btn-dark">Submit</button>
                                                     </div>
                                                 </form>';
-                elseif ($_SESSION['userState'] == "Guest") :
-                    $this->content .= '
+                    elseif ($userState == "Guest") :
+                        $this->content .= '
                                                 <p>
                                                     You must have a certified account to post a message !
                                                 </p>
                         ';
-                else :
-                    $this->content .= '
+                    else :
+                        $this->content .= '
                                                 <p>If you want to add a comment, you must 
                                                     <a href="index.php?action=userConnect" class="link" >log in</a>
                                                 </p>
                         ';
+                    endif;
                 endif;
                 break;
             endforeach;
@@ -140,7 +149,7 @@ class PostListView extends _DefaultView
                                                     ' . $data['comment_Content'] . '
                                                     
                                                 </div>';
-            if ($_SESSION['userState'] == "Admin") :
+            if ($userState == "Admin") :
                 $this->content .= '
                                                 <form class="p-1" action="index.php?action=validCommentUser" method="POST">
                                                 <input name="idCommentUser" type="hidden" value="' . $data[0] . '">

@@ -68,8 +68,10 @@ class ContactMeView extends _DefaultView
                         <div class="form-group">
                             <label for="exampleFormControlInput1">Email address</label>
                             <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="';
+
         if (isset($_SESSION['userMail'])) :
-            $this->content .= $_SESSION['userMail'];
+            $userMail = htmlentities($_SESSION['userMail']);
+            $this->content .= $userMail;
         else :
             $this->content .= 'name@example.com';
         endif;
@@ -81,8 +83,10 @@ class ContactMeView extends _DefaultView
                             <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                         </div>
                         <input name="idUser" type="hidden" value="';
+
         if (isset($_SESSION['idUser'])) :
-            $this->content .= $_SESSION['idUser'];
+            $idUser = htmlentities($_SESSION['idUser']);
+            $this->content .= $idUser;
         else :
             $this->content .= " Inconnu";
         endif;

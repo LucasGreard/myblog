@@ -42,8 +42,10 @@ class commentListValidationView extends _DefaultView
         <header class="py-5 bg-light border-bottom mb-4">
             <div class="container">
                 <div class="text-center my-5">';
+
         if (isset($_SESSION['commentManage'])) :
-            $this->content .= '<h4>' . $_SESSION['commentManage'] . '</h4>';
+            $commentManage = htmlentities($_SESSION['commentManage']);
+            $this->content .= '<h4>' . $commentManage . '</h4>';
             unset($_SESSION['commentManage']);
         endif;
         $this->htmlBefore .= '

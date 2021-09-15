@@ -52,9 +52,11 @@ class UserSignUpView extends _DefaultView
     private function _getContent()
     {
         $this->content = "";
+
         if (isset($_SESSION['userExist'])) :
+            $userExist = htmlentities($_SESSION['userExist']);
             $this->content .= ' <div class="alert alert-danger" role="alert">
-                ' . $_SESSION['userExist'] . '</div>';
+                ' . $userExist . '</div>';
             unset($_SESSION['userExist']);
         endif;
         $this->content .=

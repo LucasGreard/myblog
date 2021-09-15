@@ -3,9 +3,8 @@ require_once('_defaultView.php');
 
 use Models\CommentManager;
 use Models\PostManager;
-use Models\HomeManager;
 
-class commentListView extends _DefaultView
+class PostListView extends _DefaultView
 {
 
     private $commentManager;

@@ -84,10 +84,10 @@ class ManagePostAdminView extends _DefaultView
                             </thead>
                             <tbody>
                         ';
-        $listPost = $this->postManager->listPost();
+        $listPosts = $this->postManager->listPosts();
 
 
-        while ($data = $listPost->fetch()) :
+        while ($data = $listPosts->fetch()) :
             $this->content .= ' 
                         
                                 <tr>
@@ -100,7 +100,7 @@ class ManagePostAdminView extends _DefaultView
                                         <form action="index.php?action=managePostAdmin" method="POST">
                                             <input name="idPostAdmin" type="hidden" value="' . $data['id'] . '">
                                             <button type="submit" class="btn btn-outline-success" name="modifyAdminPost">Modify</button>
-                                            <button type="submit" class="btn btn-outline-danger" name="deleteUserPost">Delete</button>
+                                            <button type="submit" class="btn btn-outline-danger" name="deleteAdminPost">Delete</button>
                                         </form>
                                     </td>
                                 </tr>

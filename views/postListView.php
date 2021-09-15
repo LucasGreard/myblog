@@ -3,7 +3,7 @@ require_once('_defaultView.php');
 
 use Models\PostManager;
 
-class postListView extends _DefaultView
+class PostsListView extends _DefaultView
 {
 
     private $postManager;
@@ -61,7 +61,7 @@ class postListView extends _DefaultView
                     <!-- Nested row for non-featured blog posts-->
                     <div class="row">
                         ';
-        $listPost = $this->postManager->listPost();
+        $listPost = $this->postManager->listPosts();
         $i = 1;
 
         while ($data = $listPost->fetch()) :
@@ -75,9 +75,9 @@ class postListView extends _DefaultView
                                 </a>
                                 <div class="card-body">
                                     <div class="small text-muted">' . $data['post_Date_Modif'] . '</div>
-                                    <h2 class="card-title h4"><a class="card-title h4" href="index.php?action=listComment&id=' . $data['id'] . '">' . $data['post_Heading'] . '</a></h2>
+                                    <h2 class="card-title h4"><a class="card-title h4" href="index.php?action=listPost&id=' . $data['id'] . '">' . $data['post_Heading'] . '</a></h2>
                                     <p class="card-text">' . $data['post_Chapo'] . '</p>
-                                    <a class="btn btn-light" href="index.php?action=listComment&id=' . $data['id'] . '">Read more →</a>
+                                    <a class="btn btn-light" href="index.php?action=listPost&id=' . $data['id'] . '">Read more →</a>
                                 </div>
                             </div>
                         </div>
@@ -135,9 +135,9 @@ class postListView extends _DefaultView
                                 </a>
                                 <div class="card-body">
                                     <div class="small text-muted">' . $data['post_Date_Add'] . '</div>
-                                    <h2 class="card-title h4"><a class="card-title h4" href="index.php?action=listComment&id=' . $data['id'] . '">' . $data['post_Heading'] . '</a></h2>
+                                    <h2 class="card-title h4"><a class="card-title h4" href="index.php?action=listPost&id=' . $data['id'] . '">' . $data['post_Heading'] . '</a></h2>
                                     <p class="card-text">' . $data['post_Chapo'] . '</p>
-                                    <a class="btn btn-light" href="index.php?action=listComment&id=' . $data['id'] . '">Read more →</a>
+                                    <a class="btn btn-light" href="index.php?action=listPost&id=' . $data['id'] . '">Read more →</a>
                                 </div>
                             </div>
                         </div>

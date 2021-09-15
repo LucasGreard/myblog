@@ -44,10 +44,9 @@ class UserManager extends Dbconnect
     {
         if (!isset($userInfo)) :
             //On récupére les données du formulaire de connexion
-            if (isset($_POST['userMail']) && isset($_POST['userPwd'])) :
-                $userMail = htmlentities($_POST['userMail']);
-                $userPwd = htmlentities($_POST['userPwd']);
-
+            $userMail = filter_input(INPUT_POST, 'userMail', FILTER_SANITIZE_EMAIL);
+            $userPwd = filter_input(INPUT_POST, 'userPwd', FILTER_SANITIZE_STRING);
+            if (isset($userMail) && isset($userPwd)) :
                 $req = $this->dbConnect->prepare('
                         SELECT user_Password 
                         FROM user 
@@ -99,14 +98,15 @@ class UserManager extends Dbconnect
     // Inscription d'un user
     public function UserSignUp($homeManager)
     {
-        if (isset($_POST['userLastName']) && isset($_POST['userFirstName']) && isset($_POST['userPhone']) && isset($_POST['userMail'])) :
+        $userLastName = filter_input(INPUT_POST, 'userLastName', FILTER_SANITIZE_STRING);
+        $userFirstName = filter_input(INPUT_POST, 'userFirstName', FILTER_SANITIZE_STRING);
+        $userPhone = filter_input(INPUT_POST, 'userPhone', FILTER_SANITIZE_STRING);
+        $userMail = filter_input(INPUT_POST, 'userMail', FILTER_SANITIZE_EMAIL);
 
-            $userLastName = htmlentities($_POST['userLastName']);
-            $userFirstName = htmlentities($_POST['userFirstName']);
-            $userPhone = htmlentities($_POST['userPhone']);
-            $userMail = htmlentities($_POST['userMail']);
-            $userPwd = htmlentities($_POST['userPwd']);
-            $userPwd2 = htmlentities($_POST['userPwd2']);
+        if (isset($userLastName) && isset($userFirstName) && isset($userPhone) && isset($userMail)) :
+
+            $userPwd = filter_input(INPUT_POST, 'userPwd', FILTER_SANITIZE_STRING);
+            $userPwd2 = filter_input(INPUT_POST, 'userPwd2', FILTER_SANITIZE_STRING);
 
             if (isset($userPwd) && isset($userPwd2) && ($userPwd === $userPwd2) && $userPwd != "" && $userPwd2 != "") : //Si les deux mots de passes sont identiques et existent
                 $req = $this->ifUserExist($userPhone, $userMail);
@@ -147,13 +147,12 @@ class UserManager extends Dbconnect
     //Modification des coordonnées de l'utilisateur
     public function modifyCoorUser($userManager)
     {
-        if (isset($_SESSION['idUser'])) :
-
-            $idUser = $_SESSION['idUser'];
-            $userLastName = htmlentities($_POST['userLastName']);
-            $userFirstName =  htmlentities($_POST['userFirstName']);
-            $userPhone = htmlentities($_POST['userPhone']);
-            $userMail = htmlentities($_POST['userMail']);
+        $idUser = htmlentities($_SESSION['idUser']);
+        if (isset($idUser)) :
+            $userLastName = filter_input(INPUT_POST, 'userLastName', FILTER_SANITIZE_STRING);
+            $userFirstName = filter_input(INPUT_POST, 'userFirstName', FILTER_SANITIZE_STRING);
+            $userPhone = filter_input(INPUT_POST, 'userPhone', FILTER_SANITIZE_STRING);
+            $userMail = filter_input(INPUT_POST, 'userMail', FILTER_SANITIZE_EMAIL);
 
             $req = $this->dbConnect->prepare('
                     UPDATE user
@@ -187,7 +186,9 @@ class UserManager extends Dbconnect
     //Affiche les USERS via l'ADMIN
     public function listUserManage($homeManager)
     {
-        if (isset($_SESSION['VerifConnection']) && $_SESSION['userState'] == "Admin") :
+        $verifConnection = htmlentities($_SESSION['VerifConnection']);
+        $userState = htmlentities($_SESSION['userState']);
+        if (isset($verifConnection) && $userState == "Admin") :
             $req = '
             SELECT *
             FROM user 
@@ -203,7 +204,7 @@ class UserManager extends Dbconnect
     //Détruit un USER
     public function deleteUser()
     {
-        $idUser = htmlentities($_POST['idUser']);
+        $idUser = filter_input(INPUT_POST, 'idUser', FILTER_SANITIZE_NUMBER_INT);
         $req = $this->dbConnect->prepare('
             DELETE FROM user
             WHERE id = :id
@@ -218,7 +219,7 @@ class UserManager extends Dbconnect
     }
     public function acceptUser()
     {
-        $idUser = htmlentities($_POST['idUser']);
+        $idUser = filter_input(INPUT_POST, 'idUser', FILTER_SANITIZE_NUMBER_INT);
         $req = $this->dbConnect->prepare('
             UPDATE user
             SET user_State = "User"

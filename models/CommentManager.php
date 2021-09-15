@@ -76,7 +76,9 @@ class CommentManager extends Dbconnect
     }
     public function listCommentValidation(HomeManager $homeManager)
     {
-        if (isset($_SESSION['VerifConnection']) && $_SESSION['userState'] == "Admin") :
+        $verifConnection = htmlentities($_SESSION['VerifConnection']);
+        $userState = htmlentities($_SESSION['userState']);
+        if (isset($verifConnection) && $userState == "Admin") :
             $req = '
             SELECT *
             FROM comment as c 
@@ -91,8 +93,10 @@ class CommentManager extends Dbconnect
     }
     public function valideCommentUser()
     {
-        if (isset($_SESSION['VerifConnection']) && $_SESSION['userState'] === "Admin") :
-            $idCommentUser = htmlentities($_POST['idCommentUser']);
+        $verifConnection = htmlentities($_SESSION['VerifConnection']);
+        $userState = htmlentities($_SESSION['userState']);
+        if (isset($verifConnection) && $userState === "Admin") :
+            $idCommentUser = filter_input(INPUT_POST, 'idCommentUser', FILTER_SANITIZE_NUMBER_INT);
             $req = $this->dbConnect->prepare('
             UPDATE comment
             SET comment_Validation = "Yes"
@@ -108,8 +112,8 @@ class CommentManager extends Dbconnect
     }
     public function deleteUserComment()
     {
-        $idCommentUser = htmlentities($_POST['idCommentUser']);
-        $idPostUser = htmlentities($_POST['idPostUser']);
+        $idCommentUser = filter_input(INPUT_POST, 'idCommentUser', FILTER_SANITIZE_NUMBER_INT);
+        $idPostUser = filter_input(INPUT_POST, 'idPostUser', FILTER_SANITIZE_NUMBER_INT);
         $req = $this->dbConnect->prepare('
             DELETE FROM comment
             WHERE id = :id
@@ -125,7 +129,10 @@ class CommentManager extends Dbconnect
     public function userComments()
     {
         $homeManager = new HomeManager();
-        if (isset($_SESSION['VerifConnection'])) :
+        $verifConnection = htmlentities($_SESSION['VerifConnection']);
+        $userLastName = htmlentities($_SESSION['userLastName']);
+        $userFirstName = htmlentities($_SESSION['userFirstName']);
+        if (isset($verifConnection)) :
             $req = $this->dbConnect->prepare('
             SELECT *
             FROM comment
@@ -134,7 +141,7 @@ class CommentManager extends Dbconnect
             ');
             $req->execute(
                 array(
-                    $_SESSION['userLastName'] . " " . $_SESSION['userFirstName']
+                    $userLastName . " " . $userFirstName
                 )
             );
             return $req;

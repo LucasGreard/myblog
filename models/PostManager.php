@@ -19,7 +19,7 @@ class PostManager extends Dbconnect
 
     //Affiche les posts de l'utilisateur
 
-    public function listPost() //Affiche tous les posts validées
+    public function listPosts() //Affiche tous les posts validées
     {
         $req = '
             SELECT * 
@@ -34,7 +34,9 @@ class PostManager extends Dbconnect
     public function listUserPosts() //Affiche la liste des posts d'un utilisateur
     {
         $homeManager = new HomeManager();
-        if (isset($_SESSION['VerifConnection'])) :
+        $verifConnection = htmlentities($_SESSION['VerifConnection']);
+        $idUser = htmlentities($_SESSION['idUser']);
+        if (isset($verifConnection)) :
 
             $req = $this->dbConnect->prepare('
             SELECT *
@@ -43,25 +45,27 @@ class PostManager extends Dbconnect
             ');
             $req->execute(
                 [
-                    "id" => $_SESSION['idUser']
+                    "id" => $idUser
                 ]
             );
             return $req;
-        else :
-            displayHome($homeManager);
         endif;
+        displayHome($homeManager);
     }
 
-    public function addUserPost()
+    public function addAdminPost()
     {
         if (isset($_POST['addHeadingPost']) && isset($_POST['addContentPost']) && $_POST['addHeadingPost'] != "" && $_POST['addContentPost'] != "") :
-            $postHeading = htmlentities($_POST['addHeadingPost']);
-            $postChapo = htmlentities($_POST['addChapoPost']);
-            $postAuthor = $_SESSION['userLastName'] . " " . $_SESSION['userFirstName'];
-            $postContent = htmlentities($_POST['addContentPost']);
-            $postCategorie = htmlentities($_POST['selectCategorieAddPost']);
+
+            $postHeading = filter_input(INPUT_POST, 'addHeadingPost', FILTER_SANITIZE_STRING);
+            $postChapo = filter_input(INPUT_POST, 'addChapoPost', FILTER_SANITIZE_STRING);
+            $postAuthor = filter_input(INPUT_POST, 'userLastName', FILTER_SANITIZE_STRING) . " " . filter_input(INPUT_POST, 'userFirstName', FILTER_SANITIZE_STRING);
+            $postContent = filter_input(INPUT_POST, 'addContentPost', FILTER_SANITIZE_STRING);
+            $postCategorie = filter_input(INPUT_POST, 'selectCategorieAddPost', FILTER_SANITIZE_STRING);
             $postUserId = $_SESSION['idUser'];
-            if ($_SESSION['userState'] === "Admin") :
+            $userState = htmlentities($_SESSION['userState']);
+
+            if ($userState === "Admin") :
                 $postValidation = "Yes";
             else :
                 $postValidation = "In Progress";
@@ -89,9 +93,9 @@ class PostManager extends Dbconnect
             header("Location: index.php?action=managePostAdmin");
         endif;
     }
-    public function deleteUserPost()
+    public function deleteAdminPost()
     {
-        $idPostUser = htmlentities($_POST['idPostAdmin']);
+        $idPostUser = filter_input(INPUT_POST, 'idPostAdmin', FILTER_SANITIZE_NUMBER_INT);
         $req = $this->dbConnect->prepare('
             DELETE FROM post
             WHERE id = :id
@@ -107,7 +111,7 @@ class PostManager extends Dbconnect
     public function listUserPost()
     {
 
-        $idPostUser = htmlentities($_POST['idPostAdmin']);
+        $idPostUser = filter_input(INPUT_POST, 'idPostAdmin', FILTER_SANITIZE_NUMBER_INT);
         $req = $this->dbConnect->prepare('
         SELECT *
         FROM post 
@@ -136,11 +140,11 @@ class PostManager extends Dbconnect
     }
     public function modifyUserPost()
     {
-        $idPostUser = htmlentities($_POST['idPostAdmin']);
-        $headingPostModify = htmlentities($_POST['headingPostModify']);
-        $contentPostModify = htmlentities($_POST['contentPostModify']);
-        $authorPostModify = htmlentities($_POST['authorPostModify']);
-        $chapoPostModify = htmlentities($_POST['chapoPostModify']);
+        $idPostUser = filter_input(INPUT_POST, 'idPostAdmin', FILTER_SANITIZE_NUMBER_INT);
+        $headingPostModify = filter_input(INPUT_POST, 'headingPostModify', FILTER_SANITIZE_STRING);
+        $contentPostModify = filter_input(INPUT_POST, 'contentPostModify', FILTER_SANITIZE_STRING);
+        $authorPostModify = filter_input(INPUT_POST, 'authorPostModify', FILTER_SANITIZE_STRING);
+        $chapoPostModify = filter_input(INPUT_POST, 'chapoPostModify', FILTER_SANITIZE_STRING);
         $req = $this->dbConnect->prepare('
         UPDATE post
         SET post_Date_Modif = NOW(),   post_Heading  = :post_heading, post_Chapo = :post_chapo, post_Content = :post_content, post_Author = :post_author
@@ -161,7 +165,8 @@ class PostManager extends Dbconnect
 
     public function listPostValidation(HomeManager $homeManager)
     {
-        if (isset($_SESSION['VerifConnection']) && $_SESSION['userState'] == "Admin") :
+        $verifConnection = htmlentities($_SESSION['VerifConnection']);
+        if (isset($verifConnection) && $verifConnection == "Admin") :
             $req = '
             SELECT *
             FROM post 
@@ -176,8 +181,9 @@ class PostManager extends Dbconnect
     }
     public function valideUserPost()
     {
-        if (isset($_SESSION['VerifConnection']) && $_SESSION['userState'] == "Admin") :
-            $idPostUser = htmlentities($_POST['idPostUser']);
+        $verifConnection = htmlentities($_SESSION['VerifConnection']);
+        if (isset($verifConnection) && $verifConnection  == "Admin") :
+            $idPostUser = filter_input(INPUT_POST, 'idPostUser', FILTER_SANITIZE_NUMBER_INT);
             $req = $this->dbConnect->prepare('
             UPDATE post
             SET post_Validation = "Yes"

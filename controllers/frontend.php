@@ -21,6 +21,7 @@ use Models\PostManager;
 use Models\CommentManager;
 use Models\UserManager;
 use Models\ContactManager;
+// use Models\SuperglobalManager; //TEST 
 
 //START : Fonction principale
 function displayHome(HomeManager $homeManager) //Display Home_Page

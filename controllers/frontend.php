@@ -1,19 +1,19 @@
 <?php
 //REQUIRE_ONCE 
-require_once('Models/PostManager.php');
-require_once('Models/CommentManager.php');
-require_once('Models/UserManager.php');
-require_once('views/postListView.php');
-require_once('views/userSignUpView.php');
-require_once('views/commentListView.php');
-require_once('views/userLogOnView.php');
-require_once('views/commentListValidationView.php');
-require_once('views/userListManageView.php');
-require_once('views/contactMeView.php');
-require_once('views/userCommentsView.php');
-require_once('views/adminManagePostView.php');
-require_once('views/modifyPostAdminView.php');
-require_once('views/addPostView.php');
+require_once 'Models/PostManager.php';
+require_once 'Models/CommentManager.php';
+require_once 'Models/UserManager.php';
+require_once 'views/postListView.php';
+require_once 'views/userSignUpView.php';
+require_once 'views/commentListView.php';
+require_once 'views/userLogOnView.php';
+require_once 'views/commentListValidationView.php';
+require_once 'views/userListManageView.php';
+require_once 'views/contactMeView.php';
+require_once 'views/userCommentsView.php';
+require_once 'views/adminManagePostView.php';
+require_once 'views/modifyPostAdminView.php';
+require_once 'views/addPostView.php';
 // require_once('views/userListPostsView.php'); A ajouter si les USERS peuvent ajouter un post
 // require_once('views/userModifyPostView.php');
 // require_once('views/postListValidationView.php');
@@ -151,8 +151,8 @@ function viewUserSignUp(UserManager $userManager) //Accès à la page d'inscript
 
 function userSignUp(UserManager $userManager) //Page de validation d'inscription
 {
-    UserSignUpView::render($userManager);
     $userManager->UserSignUp($userManager);
+    UserSignUpView::render($userManager);
 }
 
 function userLogOut(UserManager $userManager) //Déconnexion de l'utilisateur

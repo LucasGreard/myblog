@@ -43,7 +43,8 @@ class CommentManager extends Dbconnect
             if ($req === '1') :
                 return $_SESSION['commentAdd'] = 'The comment already exists !';
             elseif ($req === '0') :
-                if ($_SESSION['userState'] == "Admin") :
+                $userState = htmlentities($_SESSION['userState']);
+                if ($userState == "Admin") :
                     $commentValidation = "Yes";
                 else :
                     $commentValidation = "In Progress";

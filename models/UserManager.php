@@ -148,52 +148,40 @@ class UserManager extends Dbconnect
     public function modifyCoorUser($userManager)
     {
         if (isset($_SESSION['idUser'])) :
+
+            $idUser = $_SESSION['idUser'];
             $userLastName = htmlentities($_POST['userLastName']);
             $userFirstName =  htmlentities($_POST['userFirstName']);
             $userPhone = htmlentities($_POST['userPhone']);
             $userMail = htmlentities($_POST['userMail']);
-            $userPwd = htmlentities($_POST['userPwd']);
-            $userPwdModify1 = htmlentities($_POST['userPwdModif1']);
-            $userPwdModify2 = htmlentities($_POST['userPwdModif2']);
 
-            if ($userPwdModify1 === $userPwdModify2) :
-                $req = $this->dbConnect->prepare('
-                        SELECT user_Password 
-                        FROM user 
-                        WHERE id=:id 
-                        
-                    ');
-                $req->execute(
-                    [
-                        'id' => $_SESSION['idUser']
-                    ]
-                );
-                $userPwdHash = $req->fetch();
-
-                if (password_verify($userPwd, $userPwdHash['user_Password'])) :
-                    $req = $this->dbConnect->prepare('
+            $req = $this->dbConnect->prepare('
                     UPDATE user
-                    SET userLastname = :userLastname, user_Firstname = :user_Firstname, user_Mail = :user_Mail, user_Phone = :user_Phone
-                    WHERE id = :id
+                    SET user_Lastname = ?, user_Firstname = ?, user_Mail = ?, user_Phone = ?
+                    WHERE id = ?
                 ');
-                    $req->execute(
-                        [
-                            "userLastname" => $userLastName,
-                            "user_Firstname" => $userFirstName,
-                            "user_Mail" => $userPhone,
-                            "user_Phone" => $userMail,
-                            "id" => $_SESSION['idUser']
-                        ]
-                    );
-                    return $req;
-                else :
-                    $_SESSION['modifCoordUserValide'] = "Password is not good";
-                endif;
-            else :
-                $_SESSION['modifCoordUserValide'] = "The new passwords are not the same";
-            endif;
+
+            $req->execute(
+                [
+                    $userLastName,
+                    $userFirstName,
+                    $userMail,
+                    $userPhone,
+                    $idUser
+                ]
+            );
+            $_SESSION['userLastName'] = $userLastName;
+            $_SESSION['userFirstName'] = $userFirstName;
+            $_SESSION['userPhone'] = $userPhone;
+            $_SESSION['userMail'] = $userMail;
+
+
+            $_SESSION['modifCoordUserValide'] = "Information Save prout";
+        // return $req;
+
         else :
             userConnect($userManager);
+
         endif;
     }
     //Affiche les USERS via l'ADMIN

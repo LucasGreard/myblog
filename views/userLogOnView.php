@@ -46,6 +46,14 @@ class UserLogOnView extends _DefaultView
             $this->htmlBefore .= '        
                     <h1 class="fw-bolder">If it\'s you, it\'s your contact details :)</h1>
                     <p class="lead mb-0 fst-italic">Modify what you want !</p>
+                    <p class="lead mb-0 fst-italic">';
+            if (isset($_SESSION['modifCoordUserValide'])) :
+                $this->htmlBefore .= $_SESSION['modifCoordUserValide'];
+                unset($_SESSION['modifCoordUserValide']);
+            endif;
+
+            $this->htmlBefore .= '
+                    </p>
                 </div>
             </div>
         </header>';
@@ -94,18 +102,7 @@ class UserLogOnView extends _DefaultView
                                 Email Address
                                 <input name="userMail" class="form-control" value="' . $_SESSION['userMail'] . '" type="email"> 
                             </div>
-                            <div class="input-group-prepend text-center p-1">
-                                Your actually password
-                                <input name="userPwd" class="form-control" placeholder="********" type="password"> 
-                            </div>
-                            <div class="input-group-prepend text-center p-1">
-                                Your new password
-                                <input name="userPwdModif1" class="form-control" placeholder="********" type="password"> 
-                            </div>
-                            <div class="input-group-prepend text-center p-1">
-                                Verify your new password
-                                <input name="userPwdModif2" class="form-control" placeholder="********" type="password"> 
-                            </div>
+                            
                             <div class="input-group text-center p-1">
                                 Status : 
                                 ' . $_SESSION['userState'] . ' 

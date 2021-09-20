@@ -14,13 +14,13 @@ class ManagePostAdminView extends _DefaultView
     public $rendering;
     public $sessionError;
 
-    private function __construct(PostManager $postManager, $sessionError)
+    private function __construct($postManager, $sessionError)
     {
 
         $this->postManager = $postManager;
         $this->sessionError = $sessionError;
         $this->_getHtmlBefore();
-        $this->_getContent($sessionError);
+        $this->_getContent($postManager, $sessionError);
         $this->htmlAfter = $this->_getHtmlAfter();
 
         $this->rendering = parent::getHeader();
@@ -53,10 +53,10 @@ class ManagePostAdminView extends _DefaultView
     }
 
 
-    private function _getContent($sessionError)
+    private function _getContent()
     {
         $this->content = "";
-        $this->content .= isset($sessionError) ? '<div class="text-center" id="alert">' . $sessionError . '</div>' : false;
+        $this->content .= isset($this->sessionError) ? '<div class="text-center" id="alert">' . $this->sessionError . '</div>' : false;
         $this->content .= '
         <!-- Page content-->
         <div class="container">

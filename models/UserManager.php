@@ -97,7 +97,7 @@ class UserManager extends Dbconnect
     }
 
     // Inscription d'un user
-    public function UserSignUp($homeManager)
+    public function UserSignUp($homeManager, $sessionError)
     {
         $userLastName = filter_input(INPUT_POST, 'userLastName', FILTER_SANITIZE_STRING);
         $userFirstName = filter_input(INPUT_POST, 'userFirstName', FILTER_SANITIZE_STRING);
@@ -129,10 +129,10 @@ class UserManager extends Dbconnect
                             'user_State' => "Guest"
                         ]
                     );
-                    return $_SESSION['userExist'] = 'You have registered successfully. !';
+                    return $sessionError->sessionError(14);
                 endif;
             else :
-                return $_SESSION['userExist'] = 'Passwords are not identical ! Retry !';
+                return $sessionError->sessionError(15);
             endif;
         else :
             displayHome($homeManager);

@@ -37,8 +37,10 @@ class CommentManager extends Dbconnect
     }
     public function addUserComment($post_id)
     {
+        $sessionError = new SuperglobalManager();
         if (isset($_POST['contentCommentUser']) && $_POST['contentCommentUser'] != "") :
             $commentAuthor = $_SESSION['userLastName'] . " " . $_SESSION['userFirstName'];
+            // $commentAuthor = SuperglobalManager::addSession($_SESSION['userLastName']) . " " . SuperglobalManager::addSession($_SESSION['userFirstName']);
             $commentContent = htmlentities($_POST['contentCommentUser']);
             $commentUserId = $post_id;
             $req = $this->ifCommentExist($commentAuthor, $commentContent, $commentUserId);
@@ -65,20 +67,17 @@ class CommentManager extends Dbconnect
                     ]
                 );
                 if ($_SESSION['userState'] == "Admin") :
-                    $sessionError = new SuperglobalManager();
                     return $sessionError->sessionError(1);
                 else :
-                    $sessionError = new SuperglobalManager();
                     return $sessionError->sessionError(4);
                 endif;
             endif;
 
         else :
-            $sessionError = new SuperglobalManager();
             return $sessionError->sessionError(2);
         endif;
     }
-    public function listCommentValidation(HomeManager $homeManager)
+    public function listCommentValidation($homeManager)
     {
         $verifConnection = htmlentities($_SESSION['VerifConnection']);
         $userState = htmlentities($_SESSION['userState']);
@@ -111,7 +110,6 @@ class CommentManager extends Dbconnect
                     "id" => $idCommentUser
                 ]
             );
-            $_SESSION['commentManage'] = 'Comment modified by "YES"';
         endif;
     }
     public function deleteUserComment()
@@ -126,8 +124,6 @@ class CommentManager extends Dbconnect
                 'id' => $idCommentUser
             ]
         );
-
-        // $_SESSION['commentManage'] = 'Your comment is delete !';
     }
     public function userComments()
     {

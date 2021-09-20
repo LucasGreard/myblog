@@ -48,6 +48,26 @@ class SuperglobalManager
             case '10':
                 return $this->sessionError = 'You are connected';
 
+                //MANAGE VALIDATION ERROR
+            case '11':
+                return $this->sessionError = 'Comment was changed by YES';
+
+            case '12':
+                return $this->sessionError = 'User was validate';
+
+            case '13':
+                return $this->sessionError = 'User was delete';
+
+            case '14':
+                return $this->sessionError = 'You have registered successfully';
+
+            case '15':
+                return $this->sessionError = 'Passwords are not identical ! Retry';
+
         endswitch;
+    }
+    public static function addSession($userInfo)
+    {
+        return $_SESSION[$userInfo];
     }
 }

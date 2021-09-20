@@ -6,23 +6,24 @@ use Models\PostManager;
 
 class PostWithCommentView extends _DefaultView
 {
-
-    private $commentManager;
     private $postManager;
+    private $commentManager;
     private $htmlBefore;
     private $content;
     private $htmlAfter;
     public $rendering;
-    public $sessionError;
+    private $sessionError;
+    private $post_Id;
 
-    private function __construct($post_Id, $sessionError, $postManager, $commentManager)
+    private function __construct($postManager, $commentManager, $post_Id,  $sessionError)
     {
 
         $this->commentManager = $commentManager;
         $this->sessionError = $sessionError;
         $this->postManager = $postManager;
+        $this->post_Id = $post_Id;
         $this->_getHtmlBefore();
-        $this->_getContent($post_Id, $sessionError);
+        $this->_getContent($postManager, $commentManager, $post_Id, $sessionError);
         $this->htmlAfter = $this->_getHtmlAfter();
 
         $this->rendering = parent::getHeader();
@@ -34,7 +35,7 @@ class PostWithCommentView extends _DefaultView
 
     public static function render($commentManager, $post_Id = null, $postManager = null, $sessionError = null): void
     {
-        $obj = new self($commentManager, $post_Id, $postManager, $sessionError);
+        $obj = new self($commentManager, $post_Id, $postManager,  $sessionError);
         echo $obj->rendering;
     }
 
@@ -44,15 +45,15 @@ class PostWithCommentView extends _DefaultView
         ';
     }
 
-    private function _getContent($post_id, $sessionError)
+    private function _getContent()
     {
-        var_dump($post_id);
-        $postManager = $this->postManager->listUniquePost($post_id);
+
 
         $this->content = "";
-        $postManager = $postManager->fetchAll();
-        if (!empty($postManager)) :
-            foreach ($postManager as $data) :
+        $listPost = $this->postManager->listUniquePost($this->post_id);
+        if (!empty($listPost)) :
+            foreach ($listPost as $data) :
+
                 $this->content .=
                     '       <!-- Page content-->
                         <div class="container mt-5">
@@ -122,11 +123,12 @@ class PostWithCommentView extends _DefaultView
                 endif;
                 break;
             endforeach;
+
         else :
             header("Location: index.php");
         endif;
-        $commentManager = $this->commentManager->listComment($post_id);
-        foreach ($commentManager as $data) :
+        $listComment = $this->commentManager->listComment($this->post_id);
+        foreach ($listComment as $data) :
             $this->content .= '      <!-- Comment with nested comments-->
                                             <div class="d-flex mb-4">
                                                 <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
@@ -152,7 +154,7 @@ class PostWithCommentView extends _DefaultView
             $this->content .= '
                                             </div>';
         endforeach;
-        $postManager = $this->postManager->listUniquePost($post_id);
+        $postManager = $this->postManager->listUniquePost($this->post_id);
         $this->content .= '
                                     </div>
                                     </div>

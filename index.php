@@ -6,6 +6,7 @@ use Models\ContactManager;
 use Models\Dbconnect;
 use Models\HomeManager;
 use Models\PostManager;
+use Models\SuperglobalManager;
 use Models\UserManager;
 
 
@@ -21,6 +22,7 @@ $commentManager = new CommentManager();
 $userManager = new UserManager();
 $homeManager = new HomeManager();
 $contactManager = new ContactManager();
+$sessionError = new SuperglobalManager();
 
 
 
@@ -43,7 +45,7 @@ try {
             break;
 
         case 'userSignUp':
-            userSignUp($userManager); // Valide Sign_Up
+            userSignUp($userManager, $sessionError, $homeManager); // Valide Sign_Up
             break;
 
         case 'deleteSession':
@@ -51,11 +53,11 @@ try {
             break;
 
         case 'userComments':
-            userComments($commentManager); // Display Comment_User_Page
+            userComments($commentManager, $sessionError = null); // Display Comment_User_Page
             break;
 
         case 'addUserComment':
-            addUserComment($commentManager, $postManager); // Add a comment by user
+            addUserComment($postManager, $commentManager); // Add a comment by user
             break;
 
         case 'modifyCoorUser':
@@ -69,7 +71,8 @@ try {
             break;
 
         case 'listPost':
-            listPost($commentManager, $postManager); // Display a Post with comment(s)
+            $post_Id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+            listPost($postManager, $commentManager, $post_Id); // Display a Post with comment(s)
             break;
             // END : Display Post(s) and Comment(s)
 
@@ -92,7 +95,7 @@ try {
             break;
 
         case 'validAndDeleteCommentUser':
-            valideAndDeleteCommentUser($commentManager); // Valid or delete Comment User by an Admin
+            valideAndDeleteCommentUser($postManager, $commentManager, $sessionError); // Valid or delete Comment User by an Admin
             break;
 
         case 'listUserManage':
@@ -100,15 +103,15 @@ try {
             break;
 
         case 'ManageUser':
-            ManageUser($userManager); // Delete an User
+            ManageUser($userManager, $sessionError, $homeManager); // Delete an User
             break;
 
         case 'managePostAdmin': // Manage an User
-            managePostAdmin($postManager);
+            managePostAdmin($postManager, $sessionError);
             break;
 
         case 'modifyPostAdmin': // Edit Post by an Admin
-            modifyPostAdmin($postManager, $commentManager);
+            modifyPostAdmin($postManager, $commentManager, $sessionError);
             break;
 
         case 'addPostAdmin': // Add Post by an Admin

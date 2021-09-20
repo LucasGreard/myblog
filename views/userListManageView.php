@@ -6,17 +6,20 @@ use Models\UserManager;
 
 class UserListManageView extends _DefaultView
 {
-
+    private $sessionError;
+    private $homeManager;
     private $userManager;
     private $htmlBefore;
     private $content;
     private $htmlAfter;
     public $rendering;
 
-    private function __construct(UserManager $userManager)
+    private function __construct($userManager, $sessionError, $homeManager)
     {
 
         $this->userManager = $userManager;
+        $this->homeManager = $homeManager;
+        $this->sessionError = $sessionError;
         $this->_getHtmlBefore();
         $this->_getContent();
         $this->htmlAfter = $this->_getHtmlAfter();
@@ -29,9 +32,9 @@ class UserListManageView extends _DefaultView
     }
 
 
-    public static function render($userManager, $post_Id = null, $postManager = null, $sessionError = null): void
+    public static function render($userManager, $sessionError = null, $homeManager = null): void
     {
-        $obj = new self($userManager);
+        $obj = new self($userManager, $sessionError, $homeManager);
         echo $obj->rendering;
     }
 
@@ -54,14 +57,9 @@ class UserListManageView extends _DefaultView
 
     private function _getContent()
     {
-        $homeManager = new HomeManager();
-        $listUserManage = $this->userManager->listUserManage($homeManager);
+        $listUserManage = $this->userManager->listUserManage($this->homeManager);
         $this->content = "";
-        if (isset($_SESSION['userManage'])) :
-            $userManage = htmlentities($_SESSION['userManage']);
-            $this->content .= '<h4>' . $userManage . '</h4>';
-            unset($_SESSION['userManage']);
-        endif;
+        $this->content .= isset($this->sessionError) ? '<div class="text-center" id="alert">' . $this->sessionError . '</div>' : false;
         while ($data = $listUserManage->fetch()) :
 
             $this->content .=

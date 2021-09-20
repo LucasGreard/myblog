@@ -94,7 +94,7 @@ class PostManager extends Dbconnect
 
         endif;
     }
-    public function deleteAdminPost()
+    public function deleteAdminPost($sessionError)
     {
         $idPostUser = filter_input(INPUT_POST, 'idPostAdmin', FILTER_SANITIZE_NUMBER_INT);
         $req = $this->dbConnect->prepare('
@@ -106,7 +106,6 @@ class PostManager extends Dbconnect
                 'id' => $idPostUser
             ]
         );
-        $sessionError = new SuperglobalManager();
         return $sessionError->sessionError(7);
     }
     public function listUserPost()
@@ -139,7 +138,7 @@ class PostManager extends Dbconnect
         );
         return $req;
     }
-    public function modifyUserPost()
+    public function modifyUserPost($sessionError)
     {
         $idPostUser = filter_input(INPUT_POST, 'idPostAdmin', FILTER_SANITIZE_NUMBER_INT);
         $headingPostModify = filter_input(INPUT_POST, 'headingPostModify', FILTER_SANITIZE_STRING);
@@ -160,7 +159,7 @@ class PostManager extends Dbconnect
                 "id" => $idPostUser
             ]
         );
-        $sessionError = new SuperglobalManager();
+
         return $sessionError->sessionError(8);
     }
 

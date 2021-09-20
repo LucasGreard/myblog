@@ -1,8 +1,6 @@
 <?php
 require_once('_defaultView.php');
 
-use Models\UserManager;
-
 class UserSignUpView extends _DefaultView
 {
 
@@ -12,10 +10,11 @@ class UserSignUpView extends _DefaultView
     private $htmlAfter;
     public $rendering;
 
-    private function __construct(UserManager $userManager)
+    private function __construct($userManager, $sessionError)
     {
 
         $this->userManager = $userManager;
+        $this->sessionError = $sessionError;
         $this->_getHtmlBefore();
         $this->_getContent();
         $this->htmlAfter = $this->_getHtmlAfter();
@@ -28,9 +27,9 @@ class UserSignUpView extends _DefaultView
     }
 
 
-    public static function render($userManager, $post_Id = null, $postManager = null, $sessionError = null): void
+    public static function render($userManager, $sessionError = null): void
     {
-        $obj = new self($userManager);
+        $obj = new self($userManager, $sessionError);
         echo $obj->rendering;
     }
 
@@ -53,12 +52,7 @@ class UserSignUpView extends _DefaultView
     {
         $this->content = "";
 
-        if (isset($_SESSION['userExist'])) :
-            $userExist = htmlentities($_SESSION['userExist']);
-            $this->content .= ' <div class="alert alert-danger" role="alert">
-                ' . $userExist . '</div>';
-            unset($_SESSION['userExist']);
-        endif;
+        $this->content .= isset($this->sessionError) ? '<div class="text-center" id="alert">' . $this->sessionError . '</div>' : false;
         $this->content .=
             '
             <div class="container">

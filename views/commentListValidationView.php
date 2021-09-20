@@ -2,21 +2,21 @@
 require_once('_defaultView.php');
 
 use Models\HomeManager;
-use Models\CommentManager;
 
 class commentListValidationView extends _DefaultView
 {
-
+    private $sessionError;
     private $commentManager;
     private $htmlBefore;
     private $content;
     private $htmlAfter;
     public $rendering;
 
-    private function __construct(CommentManager $commentManager)
+    private function __construct($commentManager, $sessionError)
     {
 
         $this->commentManager = $commentManager;
+        $this->sessionError = $sessionError;
         $this->_getHtmlBefore();
         $this->_getContent();
         $this->htmlAfter = $this->_getHtmlAfter();
@@ -29,9 +29,9 @@ class commentListValidationView extends _DefaultView
     }
 
 
-    public static function render($commentManager, $post_Id = null, $postManager = null, $sessionError = null): void
+    public static function render($commentManager, $sessionError = null): void
     {
-        $obj = new self($commentManager);
+        $obj = new self($commentManager, $sessionError);
         echo $obj->rendering;
     }
 
@@ -59,12 +59,8 @@ class commentListValidationView extends _DefaultView
     private function _getContent()
     {
         $this->content = "";
-        if (isset($_SESSION['commentManage'])) :
-            $commentManage = htmlentities($_SESSION['commentManage']);
-            $this->content .= '<h4>' . $commentManage . '</h4>';
-            unset($_SESSION['commentManage']);
-        endif;
-
+        var_dump($this->sessionError);
+        $this->content .= isset($this->sessionError) ? '<div class="text-center" id="alert">' . $this->sessionError . '</div>' : false;
         $homeManager = new HomeManager();
         $istCommentValidation = $this->commentManager->listCommentValidation($homeManager);
 

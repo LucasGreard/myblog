@@ -5,17 +5,18 @@ use Models\CommentManager;
 
 class userCommentsView extends _DefaultView
 {
-
     private $commentManager;
     private $htmlBefore;
     private $content;
     private $htmlAfter;
     public $rendering;
+    private $sessionError;
 
-    private function __construct(CommentManager $commentManager)
+    private function __construct($commentManager, $sessionError)
     {
 
         $this->commentManager = $commentManager;
+        $this->sessionError = $sessionError;
         $this->_getHtmlBefore();
         $this->_getContent();
         $this->htmlAfter = $this->_getHtmlAfter();
@@ -28,9 +29,9 @@ class userCommentsView extends _DefaultView
     }
 
 
-    public static function render($commentManager, $post_Id = null, $postManager = null, $sessionError = null): void
+    public static function render($commentManager, $sessionError = null): void
     {
-        $obj = new self($commentManager);
+        $obj = new self($commentManager, $sessionError);
         echo $obj->rendering;
     }
 
@@ -56,11 +57,8 @@ class userCommentsView extends _DefaultView
     {
         $userListComments = $this->commentManager->userComments();
         $this->content = "";
-        if (isset($_SESSION['commentManage'])) :
-            $commentManage = $_SESSION['commentManage'];
-            $this->content .= '<h4>' . $commentManage . '</h4>';
-            unset($_SESSION['commentManage']);
-        endif;
+
+        $this->content .= isset($this->sessionError) ? '<div class="text-center" id="alert">' . $this->sessionError . '</div>' : false;
         while ($data = $userListComments->fetch()) :
             $this->content .= '
                 <div class="col-4 mb-2">

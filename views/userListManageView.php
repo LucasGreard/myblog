@@ -35,7 +35,7 @@ class UserListManageView extends _DefaultView
     public static function render($userManager, $sessionError = null, $homeManager = null): void
     {
         $obj = new self($userManager, $sessionError, $homeManager);
-        echo $obj->rendering;
+        print_r($obj->rendering);
     }
 
 

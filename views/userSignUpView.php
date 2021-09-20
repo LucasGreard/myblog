@@ -30,7 +30,7 @@ class UserSignUpView extends _DefaultView
     public static function render($userManager, $sessionError = null): void
     {
         $obj = new self($userManager, $sessionError);
-        echo $obj->rendering;
+        print_r($obj->rendering);
     }
 
 

@@ -34,7 +34,7 @@ class ManagePostAdminView extends _DefaultView
     public static function render($postManager, $sessionError = null)
     {
         $obj = new self($postManager, $sessionError);
-        echo $obj->rendering;
+        print_r($obj->rendering);
     }
 
 

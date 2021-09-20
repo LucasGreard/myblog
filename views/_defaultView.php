@@ -184,7 +184,7 @@ class _DefaultView
     public static function render($homeManager)
     {
         $obj = new self($homeManager);
-        echo $obj->rendering;
+        print_r($obj->rendering);
     }
 
     private function _getHtmlBefore(): void

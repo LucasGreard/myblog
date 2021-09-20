@@ -32,7 +32,7 @@ class userCommentsView extends _DefaultView
     public static function render($commentManager, $sessionError = null): void
     {
         $obj = new self($commentManager, $sessionError);
-        echo $obj->rendering;
+        print_r($obj->rendering);
     }
 
 

@@ -36,7 +36,7 @@ class PostWithCommentView extends _DefaultView
     public static function render($commentManager, $post_Id = null, $postManager = null, $sessionError = null): void
     {
         $obj = new self($commentManager, $post_Id, $postManager,  $sessionError);
-        echo $obj->rendering;
+        print_r($obj->rendering);
     }
 
     private function _getHtmlBefore(): void

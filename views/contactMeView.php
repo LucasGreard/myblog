@@ -31,7 +31,7 @@ class ContactMeView extends _DefaultView
     public static function render($userManage, $post_Id = null, $postManager = null, $sessionError = null): void
     {
         $obj = new self($userManage);
-        echo $obj->rendering;
+        print_r($obj->rendering);
     }
 
 

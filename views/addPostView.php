@@ -32,7 +32,7 @@ class AddPostAdminView extends _DefaultView
     public static function render($postManager, $post_Id = null, $homeManager = null, $sessionError = null): void
     {
         $obj = new self($postManager);
-        echo $obj->rendering;
+        print_r($obj->rendering);
     }
 
 
@@ -44,12 +44,6 @@ class AddPostAdminView extends _DefaultView
                 <div class="text-center my-5">
                     <h1 class="fw-bolder">Add a post</h1>
                     <p class="lead mb-0 fst-italic">Manage your post as you want ! Like a boss !</p>';
-
-        // if (isset($_SESSION['postAdd'])) :
-        //     $postAdd = htmlentities($_SESSION['postAdd']);
-        //     $this->htmlBefore .= $postAdd;
-        //     unset($_SESSION['postAdd']);
-        // endif;
         $this->htmlBefore .= '
                 </div>
             </div>

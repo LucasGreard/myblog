@@ -29,7 +29,7 @@ class commentListValidationView extends _DefaultView
     }
 
 
-    public static function render($commentManager, $post_Id = null, $postManager = null): void
+    public static function render($commentManager, $post_Id = null, $postManager = null, $sessionError = null): void
     {
         $obj = new self($commentManager);
         echo $obj->rendering;
@@ -43,11 +43,7 @@ class commentListValidationView extends _DefaultView
             <div class="container">
                 <div class="text-center my-5">';
 
-        if (isset($_SESSION['commentManage'])) :
-            $commentManage = htmlentities($_SESSION['commentManage']);
-            $this->content .= '<h4>' . $commentManage . '</h4>';
-            unset($_SESSION['commentManage']);
-        endif;
+
         $this->htmlBefore .= '
                     <h1 class="fw-bolder">God Mod for User\'s Comments</h1>
                     <p class="lead mb-0 fst-italic">As an administrator, you have full control over the validation of comments! What joy !</p>
@@ -62,9 +58,16 @@ class commentListValidationView extends _DefaultView
 
     private function _getContent()
     {
+        $this->content = "";
+        if (isset($_SESSION['commentManage'])) :
+            $commentManage = htmlentities($_SESSION['commentManage']);
+            $this->content .= '<h4>' . $commentManage . '</h4>';
+            unset($_SESSION['commentManage']);
+        endif;
+
         $homeManager = new HomeManager();
         $istCommentValidation = $this->commentManager->listCommentValidation($homeManager);
-        $this->content = "";
+
 
         while ($data = $istCommentValidation->fetch()) :
 
@@ -77,8 +80,9 @@ class commentListValidationView extends _DefaultView
                     <li class="list-group-item disabled">Author : ' . $data['comment_Author'] . '</li>
                     <li class="list-group-item disabled">Date : ' . $data['comment_Date_Add'] . '</li>
                     <a href="index.php?action=listComment&id=' . $data['post_id'] . ' " class="btn btn-outline-dark">Voir le post en entier</a>
-                    <form action="index.php?action=validCommentUser" method="POST">
+                    <form action="index.php?action=validAndDeleteCommentUser" method="POST">
                         <input name="idCommentUser" type="hidden" value="' . $data['id'] . '">
+                        <input name="namePage" type="hidden" value="manageComments">
                         <button type="submit" class="btn btn-outline-success" name="validCommentUser">Valid</button>
                         <button type="submit" class="btn btn-outline-danger" name="deleteCommentUser">Delete</button>
                     </form>

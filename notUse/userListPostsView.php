@@ -4,7 +4,7 @@ require_once('_defaultView.php');
 use Models\HomeManager;
 use Models\PostManager;
 
-class userListPostsView extends _DefaultView
+class UserListPostsView extends _DefaultView
 {
 
     private $postManager;

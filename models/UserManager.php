@@ -3,6 +3,7 @@
 namespace Models;
 
 use Exception;
+use Models\HomeManager;
 
 class UserManager extends Dbconnect
 {
@@ -18,7 +19,7 @@ class UserManager extends Dbconnect
      */
     private function passwordHash($userPwd) //Renvoi le mdp haché
     {
-        return $userPwdHash = password_hash($userPwd, CRYPT_BLOWFISH);
+        return password_hash($userPwd, CRYPT_BLOWFISH);
     }
 
 
@@ -128,7 +129,7 @@ class UserManager extends Dbconnect
                             'user_State' => "Guest"
                         ]
                     );
-                    return $_SESSION['userExist'] = 'You have registered successfully. <a href="index.php?action=userConnect">Log in now !</a> !';
+                    return $_SESSION['userExist'] = 'You have registered successfully. !';
                 endif;
             else :
                 return $_SESSION['userExist'] = 'Passwords are not identical ! Retry !';
@@ -145,7 +146,7 @@ class UserManager extends Dbconnect
         header("Location: index.php");
     }
     //Modification des coordonnées de l'utilisateur
-    public function modifyCoorUser($userManager)
+    public function modifyCoorUser()
     {
         $idUser = htmlentities($_SESSION['idUser']);
         if (isset($idUser)) :
@@ -174,12 +175,10 @@ class UserManager extends Dbconnect
             $_SESSION['userPhone'] = $userPhone;
             $_SESSION['userMail'] = $userMail;
 
-
-            $_SESSION['modifCoordUserValide'] = "Information Save prout";
-        // return $req;
-
+            $sessionError = new SuperglobalManager();
+            return $sessionError->sessionError(9);
         else :
-            userConnect($userManager);
+            userConnect();
 
         endif;
     }
@@ -214,8 +213,7 @@ class UserManager extends Dbconnect
                 'id' => $idUser
             ]
         );
-        $_SESSION['userManage'] = 'User was delete ! </a>';
-        header("Location: index.php?action=listUserManage");
+        $_SESSION['userManage'] = 'User was delete !';
     }
     public function acceptUser()
     {
@@ -230,7 +228,6 @@ class UserManager extends Dbconnect
                 'id' => $idUser
             ]
         );
-        $_SESSION['userManage'] = 'User was accept ! </a>';
-        header("Location: index.php?action=listUserManage");
+        $_SESSION['userManage'] = 'User was accept !';
     }
 }

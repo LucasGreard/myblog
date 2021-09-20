@@ -28,7 +28,7 @@ class userCommentsView extends _DefaultView
     }
 
 
-    public static function render($commentManager, $post_Id = null, $postManager = null): void
+    public static function render($commentManager, $post_Id = null, $postManager = null, $sessionError = null): void
     {
         $obj = new self($commentManager);
         echo $obj->rendering;
@@ -49,12 +49,6 @@ class userCommentsView extends _DefaultView
         <div class="containter">
             <div class="row">
                 ';
-
-        if (isset($_SESSION['commentManage'])) :
-            $commentManage = htmlentities($_SESSION['commentManage']);
-            $this->content .= '<h4>' . $commentManage . '</h4>';
-            unset($_SESSION['commentManage']);
-        endif;
     }
 
 
@@ -62,7 +56,11 @@ class userCommentsView extends _DefaultView
     {
         $userListComments = $this->commentManager->userComments();
         $this->content = "";
-
+        if (isset($_SESSION['commentManage'])) :
+            $commentManage = $_SESSION['commentManage'];
+            $this->content .= '<h4>' . $commentManage . '</h4>';
+            unset($_SESSION['commentManage']);
+        endif;
         while ($data = $userListComments->fetch()) :
             $this->content .= '
                 <div class="col-4 mb-2">
@@ -71,13 +69,19 @@ class userCommentsView extends _DefaultView
                         <li class="list-group-item list-group-item-dark">Message : ' . substr($data['comment_Content'], 0, 200) . ' ... </li>
                         <li class="list-group-item disabled">Date : ' . $data['comment_Date_Add'] . ' </li>
                         <li class="list-group-item disabled">Status : ' . $data['comment_Validation'] . ' </li>
-                        <a href="index.php?action=listComment&id=' . $data['post_id'] . ' " class="btn btn-outline-dark">Voir le post en entier</a>';
+                        <a href="index.php?action=listPost&id=' . $data['post_id'] . ' " class="btn btn-outline-dark">Voir le post en entier</a>';
             if (isset($_SESSION['userLastName']) && isset($_SESSION['userFirstName'])) :
                 $userLastName = htmlentities($_SESSION['userLastName']);
                 $userFirstName = htmlentities($_SESSION['userFirstName']);
                 if (($userLastName . " " . $userFirstName) === $data['comment_Author']) :
 
-                    $this->content .= ' <a href="index.php?action=deleteUserComment&id=' . $data['id'] . ' " class="btn btn-outline-danger">Delete your comment</a>';
+                    $this->content .= ' 
+                    <form action="index.php?action=validAndDeleteCommentUser" method="POST">
+                        <input name="idCommentUser" type="hidden" value="' . $data['id'] . '">
+                        <input name="namePage" type="hidden" value="myComments">
+                        <button type="submit" class="btn btn-outline-danger" name="deleteCommentUser">Delete</button>
+                    </form>
+                    ';
                 endif;
                 $this->content .= '
                     </ul>

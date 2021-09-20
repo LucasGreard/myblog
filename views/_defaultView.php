@@ -6,19 +6,18 @@ use Models\PostManager;
 class _DefaultView
 {
     private $homeManager;
-    private $postManager;
     private $htmlBefore;
     private $content;
     private $htmlAfter;
     public $rendering;
 
-    private function __construct(HomeManager $homeManager = null, $post_Id = null, PostManager $postManager = null)
+    private function __construct($homeManager)
     {
 
         $this->homeManager = $homeManager;
-        $this->postManager = $postManager;
+
         $this->_getHtmlBefore();
-        $this->_getContent($homeManager, $post_Id);
+        $this->_getContent($homeManager);
         $this->htmlAfter = $this->_getHtmlAfter();
         $this->rendering = $this->getHeader();
         $this->rendering .= $this->htmlBefore;
@@ -54,6 +53,7 @@ class _DefaultView
                         ';
 
         if (isset($_SESSION['userFirstName'])) :
+
             $userFirstName = htmlentities($_SESSION['userFirstName']);
             $header .= $userFirstName . " !";
         else :
@@ -85,21 +85,12 @@ class _DefaultView
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                         <a class="dropdown-item" href="index.php?action=userLogOn">My settings</a>';
 
-            // A ajouter si les USERS peuvent ajouter un post   
-            //<div class="dropdown-divider"></div>
-            // <a class="dropdown-item" href="index.php?action=listUserPosts">See your posts</a> 
-
             if (isset($_SESSION['userState'])) :
                 $userState = htmlentities($_SESSION['userState']);
                 if ($userState != "Guest") :
                     $header .= '                <a class="dropdown-item" href="index.php?action=userComments">My comments</a>';
                 endif;
                 if ($userState === "Admin") :
-                    //A ajouter si les USERS peuvent ajouter un post
-                    // $header .= '<a class="dropdown-item" href="index.php?action=listPostValidation">See POST to manage</a>
-                    //             <div class="dropdown-divider"></div>';
-
-
                     $header .= '            <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="index.php?action=listCommentValidation">Manage Comments</a>
                                         ';
@@ -190,9 +181,9 @@ class _DefaultView
         return $footer;
     }
 
-    public static function render($homeManager, $post_Id = null, $postManager = null): void
+    public static function render($homeManager)
     {
-        $obj = new self($homeManager, $post_Id, $postManager);
+        $obj = new self($homeManager);
         echo $obj->rendering;
     }
 
@@ -211,8 +202,8 @@ class _DefaultView
             
             <!-- Page content-->
             <div class="container mt-5">
-                <div class="row">
-                    <div class="col-lg-8">
+                <div class="row">';
+            $this->content .= '<div class="col-lg-8">
                         <!-- Post content-->
                         <article>
                             <!-- Post header-->
@@ -220,7 +211,7 @@ class _DefaultView
                                 <!-- Post title-->
                                 <h1 class="fw-bolder mb-1">Welcome to MY LIFE ! </h1> 
                                 <!-- Post meta content-->
-                                <div class="text-muted fst-italic mb-2">Borned on ' . $data['birthday'] . '   </div>
+                                <div class="text-muted fst-italic mb-2">Born on ' . $data['birthday'] . '   </div>
                                 <!-- Post categories-->
                                 <div class="badge bg-secondary text-decoration-none link-light" href="#!">' . $data['skill_1'] . '</div>
                                 <div class="badge bg-secondary text-decoration-none link-light" href="#!">' . $data['skill_2'] . '</div>
@@ -278,26 +269,11 @@ class _DefaultView
                     <!-- Side widgets-->
                     <div class="col-lg-4">
                         <!-- Categories widget-->
-                        <div class="card mb-4">
-                            <div class="card-header">Categories</div>
-                            <div class="card-body">
-                                <div class="row">
                                 ';
 
         endif;
         $this->homeManager = new PostManager();
-        $listHome = $this->homeManager->postListCategory();
 
-        while ($data = $listHome->fetch()) :
-            $this->content .= '                    
-                                    <div class="col-sm-2">
-                                        <a class="badge bg-secondary text-decoration-none link-light" href="#!">' . $data['post_Category'] . '</a>   
-                                    </div>';
-        endwhile;
-        $this->content .= '                              
-                            </div>
-                        </div>
-                    </div>';
 
         $this->content .= '
                                                     <!-- Side widget-->
@@ -313,7 +289,7 @@ class _DefaultView
                         <div class="card-body">
                             <h5 class="card-title">' . $data['post_Heading'] . '</h5>
                             <p class="card-text">' . $data['post_Chapo'] . '</p>
-                            <a href="index.php?action=listComment&id=' . $data['id'] . '" class="badge bg-secondary link-light text-center">See post</a>
+                            <a href="index.php?action=listPost&id=' . $data['id'] . '" class="badge bg-secondary link-light text-center">See post</a>
                         </div>
                     </div>';
         endwhile;

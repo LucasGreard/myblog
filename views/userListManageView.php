@@ -29,7 +29,7 @@ class UserListManageView extends _DefaultView
     }
 
 
-    public static function render($userManager, $post_Id = null, $postManager = null): void
+    public static function render($userManager, $post_Id = null, $postManager = null, $sessionError = null): void
     {
         $obj = new self($userManager);
         echo $obj->rendering;
@@ -49,12 +49,6 @@ class UserListManageView extends _DefaultView
         </header>
         <div class="containter">
             <div class="row">';
-
-        if (isset($_SESSION['userManage'])) :
-            $userManage = htmlentities($_SESSION['userManage']);
-            $this->content .= '<h4>' . $userManage . '</h4>';
-            unset($_SESSION['userManage']);
-        endif;
     }
 
 
@@ -63,7 +57,11 @@ class UserListManageView extends _DefaultView
         $homeManager = new HomeManager();
         $listUserManage = $this->userManager->listUserManage($homeManager);
         $this->content = "";
-
+        if (isset($_SESSION['userManage'])) :
+            $userManage = htmlentities($_SESSION['userManage']);
+            $this->content .= '<h4>' . $userManage . '</h4>';
+            unset($_SESSION['userManage']);
+        endif;
         while ($data = $listUserManage->fetch()) :
 
             $this->content .=

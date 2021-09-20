@@ -1,23 +1,22 @@
 <?php
 require_once('_defaultView.php');
 
-use Models\UserManager;
-
 class UserLogOnView extends _DefaultView
 {
 
-    private $userConnect;
+
     private $htmlBefore;
     private $content;
     private $htmlAfter;
     public $rendering;
+    public $sessionError;
 
-    private function __construct(UserManager $userConnect)
+    private function __construct($sessionError)
     {
 
-        $this->userConnect = $userConnect;
+        $this->sessionError = $sessionError;
         $this->_getHtmlBefore();
-        $this->_getContent();
+        $this->_getContent($sessionError);
         $this->htmlAfter = $this->_getHtmlAfter();
 
         $this->rendering = parent::getHeader();
@@ -28,9 +27,9 @@ class UserLogOnView extends _DefaultView
     }
 
 
-    public static function render($userConnect, $post_Id = null, $postManager = null): void
+    public static function render($sessionError, $post_Id = null, $postManager = null, $homeManager = null): void
     {
-        $obj = new self($userConnect);
+        $obj = new self($sessionError);
         echo $obj->rendering;
     }
 
@@ -47,13 +46,6 @@ class UserLogOnView extends _DefaultView
                     <h1 class="fw-bolder">If it\'s you, it\'s your contact details :)</h1>
                     <p class="lead mb-0 fst-italic">Modify what you want !</p>
                     <p class="lead mb-0 fst-italic">';
-
-            if (isset($_SESSION['modifCoordUserValide'])) :
-                $modifCoordUserValide = htmlentities($_SESSION['modifCoordUserValide']);
-                $this->htmlBefore .= $modifCoordUserValide;
-                unset($_SESSION['modifCoordUserValide']);
-            endif;
-
             $this->htmlBefore .= '
                     </p>
                 </div>
@@ -76,7 +68,7 @@ class UserLogOnView extends _DefaultView
     }
 
 
-    private function _getContent()
+    private function _getContent($sessionError)
     {
         $this->content = "";
         if (isset($_SESSION['VerifConnection'])) :
@@ -85,6 +77,8 @@ class UserLogOnView extends _DefaultView
             $userPhone = htmlentities($_SESSION['userPhone']);
             $userMail = htmlentities($_SESSION['userMail']);
             $userState = htmlentities($_SESSION['userState']);
+            $this->content .= isset($sessionError) ? '<div class="text-center" id="alert">' . $sessionError . '</div>' : false;
+
 
             $this->content .= '
                 <div class="col-3">

@@ -13,12 +13,16 @@ use Models\UserManager;
 require __DIR__ . "/vendor/autoload.php";
 require('controllers/frontend.php');
 
-$db = Dbconnect::dbConnect(); //Initiates Connexion
-$postManager = new PostManager(); //Initiates PostManager
-$commentManager = new CommentManager(); //Initiates CommentManager
-$userManager = new UserManager(); //Initiates UserManager
-$homeManager = new HomeManager(); //Initiates HomeManager
-$contactManager = new ContactManager(); //Initiates ContactManager 
+
+// Initialize all managers
+$db = Dbconnect::dbConnect();
+$postManager = new PostManager();
+$commentManager = new CommentManager();
+$userManager = new UserManager();
+$homeManager = new HomeManager();
+$contactManager = new ContactManager();
+
+
 
 try {
     if (!isset($_GET['action'])) {
@@ -91,10 +95,6 @@ try {
             valideAndDeleteCommentUser($commentManager); // Valid or delete Comment User by an Admin
             break;
 
-        case 'deleteUserComment':
-            deleteUserComment($commentManager); // Delete Comment by an Admin
-            break;
-
         case 'listUserManage':
             listUserManage($userManager); // Display Manage_User_Page
             break;
@@ -108,7 +108,7 @@ try {
             break;
 
         case 'modifyPostAdmin': // Edit Post by an Admin
-            modifyPostAdmin($postManager);
+            modifyPostAdmin($postManager, $commentManager);
             break;
 
         case 'addPostAdmin': // Add Post by an Admin
@@ -121,7 +121,10 @@ try {
             break;
 
     endswitch;
-} catch (Exception $e) {
-    echo 'Erreur : ' . $e->getMessage();
+} catch (Exception | Error $e) {
+
+    echo getenv("COMPUTERNAME") === "UTILISATEUR-PC" ?
+        'Erreur : ' . $e->getMessage() : "Une erreur s'est prodiote, veuillez réessayer.";
 }
-Dbconnect::dbCloseConnection($db); // Delete connection
+
+Dbconnect::dbCloseConnection($db); // CClloosse connection

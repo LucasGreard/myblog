@@ -28,7 +28,7 @@ class UserSignUpView extends _DefaultView
     }
 
 
-    public static function render($userManager, $post_Id = null, $postManager = null): void
+    public static function render($userManager, $post_Id = null, $postManager = null, $sessionError = null): void
     {
         $obj = new self($userManager);
         echo $obj->rendering;

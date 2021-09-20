@@ -4,7 +4,7 @@ require_once('_defaultView.php');
 use Models\CommentManager;
 use Models\PostManager;
 
-class PostListView extends _DefaultView
+class PostWithCommentView extends _DefaultView
 {
 
     private $commentManager;
@@ -13,14 +13,16 @@ class PostListView extends _DefaultView
     private $content;
     private $htmlAfter;
     public $rendering;
+    public $sessionError;
 
-    private function __construct(CommentManager $commentManager, $post_Id, PostManager $postManager)
+    private function __construct($post_Id, $sessionError, $postManager, $commentManager)
     {
 
         $this->commentManager = $commentManager;
+        $this->sessionError = $sessionError;
         $this->postManager = $postManager;
         $this->_getHtmlBefore();
-        $this->_getContent($commentManager, $post_Id, $postManager);
+        $this->_getContent($post_Id, $sessionError);
         $this->htmlAfter = $this->_getHtmlAfter();
 
         $this->rendering = parent::getHeader();
@@ -30,13 +32,11 @@ class PostListView extends _DefaultView
         $this->rendering .= parent::getFooter();
     }
 
-
-    public static function render($commentManager, $post_Id = null, $postManager = null): void
+    public static function render($commentManager, $post_Id = null, $postManager = null, $sessionError = null): void
     {
-        $obj = new self($commentManager, $post_Id, $postManager);
+        $obj = new self($commentManager, $post_Id, $postManager, $sessionError);
         echo $obj->rendering;
     }
-
 
     private function _getHtmlBefore(): void
     {
@@ -44,9 +44,9 @@ class PostListView extends _DefaultView
         ';
     }
 
-
-    private function _getContent($commentManager, $post_id, $postManager)
+    private function _getContent($post_id, $sessionError)
     {
+        var_dump($post_id);
         $postManager = $this->postManager->listUniquePost($post_id);
 
         $this->content = "";
@@ -57,11 +57,11 @@ class PostListView extends _DefaultView
                     '       <!-- Page content-->
                         <div class="container mt-5">
                             <div class="row">
-                                <div class="col-lg-8">
+                                <div class="col-lg-12">
                                     <!-- Post content-->
                                     <article>
                                         <!-- Post header-->
-                                        <header class="mb-4">
+                                        <header class="mb-12">
                                             <!-- Post title-->
                                             <h1 class="fw-bolder mb-1">' . $data['post_Heading'] . '</h1>
                                             <!-- Post meta content-->
@@ -70,11 +70,6 @@ class PostListView extends _DefaultView
                                             <!-- Post categories-->
                                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">' . $data['post_Category'] . '</a>';
 
-                if (isset($_SESSION['postModify'])) :
-                    $postModify = htmlentities($_SESSION['postModify']);
-                    $this->content .= '<p>' . $postModify . '</p>';
-                    unset($_SESSION['postModify']);
-                endif;
                 $this->content .=
                     '                    </header>
                                         <!-- Preview image figure-->
@@ -98,19 +93,13 @@ class PostListView extends _DefaultView
                                                 <!-- Comment form-->
                                                 ';
 
-
-
                 if (isset($_SESSION['idUser'])) :
                     $userState = htmlentities($_SESSION['userState']);
                     if ($userState != "Guest") :
-                        if (isset($_SESSION['commentAdd'])) :
-                            $commentAdd = htmlentities($_SESSION['commentAdd']);
-                            $this->content .= '<div class="text-center">' . $commentAdd . '</div>';
-                            unset($_SESSION['commentAdd']);
-                        endif;
+                        $this->content .= isset($sessionError) ? '<div class="text-center" id="alert">' . $sessionError . '</div>' : false;
                         $this->content .= '
                                     
-                                                <form class="mb-4" method="POST" action="index.php?action=addUserComment&id=' . $data['id'] . '">
+                                                <form class="mb-4" method="POST" action="index.php?action=addUserComment&id=' . $data['id'] . '&#alert">
                                                     <input name="idCommentUser" type="hidden" value="' . $data['id'] . '">
                                                     <textarea class="form-control" rows="3" name="contentCommentUser" placeholder="Join the discussion and leave a comment!"></textarea>
                                                     <div class="text-center">
@@ -134,13 +123,10 @@ class PostListView extends _DefaultView
                 break;
             endforeach;
         else :
-
             header("Location: index.php");
-
         endif;
         $commentManager = $this->commentManager->listComment($post_id);
         foreach ($commentManager as $data) :
-
             $this->content .= '      <!-- Comment with nested comments-->
                                             <div class="d-flex mb-4">
                                                 <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
@@ -149,59 +135,28 @@ class PostListView extends _DefaultView
                                                     ' . $data['comment_Content'] . '
                                                     
                                                 </div>';
-            if ($userState == "Admin") :
-                $this->content .= '
-                                                <form class="p-1" action="index.php?action=validCommentUser" method="POST">
-                                                <input name="idCommentUser" type="hidden" value="' . $data[0] . '">
-                                                <input name="idPostUser" type="hidden" value="' . $data['id'] . '">
+            if (isset($_SESSION['userState'])) :
+                $userState = htmlentities($_SESSION['userState']);
+                $userLastName = htmlentities($_SESSION['userLastName']);
+                $userFirstName = htmlentities($_SESSION['userFirstName']);
+                if ($userState == "Admin" || $userLastName . " " . $userFirstName == $data['comment_Author']) :
+                    $this->content .= '
+                                                <form class="p-1" action="index.php?action=validAndDeleteCommentUser" method="POST">
+                                                    <input name="idCommentUser" type="hidden" value="' . $data[0] . '">
+                                                    <input name="idPostAdmin" type="hidden" value="' . $data[5] . '">
+                                                    <input name="namePage" type="hidden" value="manageCommentsDirectlyOnPost">
                                                     <button type="submit" class="btn btn-outline-danger" name="deleteCommentUser">Delete comment </button>
                                                 </form>';
+                endif;
             endif;
-
             $this->content .= '
                                             </div>';
         endforeach;
         $postManager = $this->postManager->listUniquePost($post_id);
-        $this->content .= '                            </div>
+        $this->content .= '
+                                    </div>
                                     </div>
                                 </section>
-                            </div>
-                            <!-- Side widgets-->
-                            <div class="col-lg-4">
-                                <!-- Search widget-->
-                                <div class="card mb-4">
-                                    <div class="card-header">Search</div>
-                                    <div class="card-body">
-                                        <div class="input-group">
-                                            <input class="form-control" type="text" placeholder="Enter search term..." aria-label="Enter search term..." aria-describedby="button-search" />
-                                            <button class="btn btn-primary" id="button-search" type="button">Go!</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Side widgets-->
-                                <div class="col-lg-12">
-                                    <!-- Categories widget-->
-                                    <div class="card mb-4">
-                                        <div class="card-header">Categories</div>
-                                        <div class="card-body">
-                                            <div class="row">   
-                                
-                                
-                                
-                                ';
-        foreach ($postManager as $data) :
-            $this->content .= '                    
-                                                    <div class="col">
-                                                        <a class="badge bg-secondary text-decoration-none link-light" href="#!">' . $data['post_Category'] . '</a>   
-                                                    </div>';
-        endforeach;
-
-
-        $this->content .= '
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>';

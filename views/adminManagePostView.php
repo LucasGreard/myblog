@@ -12,13 +12,15 @@ class ManagePostAdminView extends _DefaultView
     private $content;
     private $htmlAfter;
     public $rendering;
+    public $sessionError;
 
-    private function __construct(PostManager $postManager)
+    private function __construct(PostManager $postManager, $sessionError)
     {
 
         $this->postManager = $postManager;
+        $this->sessionError = $sessionError;
         $this->_getHtmlBefore();
-        $this->_getContent();
+        $this->_getContent($sessionError);
         $this->htmlAfter = $this->_getHtmlAfter();
 
         $this->rendering = parent::getHeader();
@@ -29,9 +31,9 @@ class ManagePostAdminView extends _DefaultView
     }
 
 
-    public static function render($postManager, $post_Id = null, $homeManager = null): void
+    public static function render($postManager, $sessionError = null)
     {
-        $obj = new self($postManager);
+        $obj = new self($postManager, $sessionError);
         echo $obj->rendering;
     }
 
@@ -44,12 +46,6 @@ class ManagePostAdminView extends _DefaultView
                 <div class="text-center my-5">
                     <h1 class="fw-bolder">All post I found</h1>
                     <p class="lead mb-0 fst-italic">Manage your post as you want ! Like a boss !</p>';
-
-        if (isset($_SESSION['postAdd'])) :
-            $postAdd = htmlentities($_SESSION['postAdd']);
-            $this->htmlBefore .= $postAdd;
-            unset($_SESSION['postAdd']);
-        endif;
         $this->htmlBefore .= '
                 </div>
             </div>
@@ -57,9 +53,10 @@ class ManagePostAdminView extends _DefaultView
     }
 
 
-    private function _getContent()
+    private function _getContent($sessionError)
     {
         $this->content = "";
+        $this->content .= isset($sessionError) ? '<div class="text-center" id="alert">' . $sessionError . '</div>' : false;
         $this->content .= '
         <!-- Page content-->
         <div class="container">
@@ -95,7 +92,7 @@ class ManagePostAdminView extends _DefaultView
                                 <tr>
                                     <th scope="row">' . $data['id'] . '</th>
                                     <td>
-                                        <a href="index.php?action=listComment&id=' . $data['id'] . '">' . $data['post_Heading'] . '</a>
+                                        <a href="index.php?action=listPost&id=' . $data['id'] . '">' . $data['post_Heading'] . '</a>
                                     </td>
                                     <td>' . substr($data['post_Content'], 0, 50) . '</td>
                                     <td>

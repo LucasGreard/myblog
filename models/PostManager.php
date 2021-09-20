@@ -59,7 +59,7 @@ class PostManager extends Dbconnect
 
             $postHeading = filter_input(INPUT_POST, 'addHeadingPost', FILTER_SANITIZE_STRING);
             $postChapo = filter_input(INPUT_POST, 'addChapoPost', FILTER_SANITIZE_STRING);
-            $postAuthor = filter_input(INPUT_POST, 'userLastName', FILTER_SANITIZE_STRING) . " " . filter_input(INPUT_POST, 'userFirstName', FILTER_SANITIZE_STRING);
+            $postAuthor = htmlentities($_SESSION['userLastName']) . " " . htmlentities($_SESSION['userFirstName']);
             $postContent = filter_input(INPUT_POST, 'addContentPost', FILTER_SANITIZE_STRING);
             $postCategorie = filter_input(INPUT_POST, 'selectCategorieAddPost', FILTER_SANITIZE_STRING);
             $postUserId = $_SESSION['idUser'];
@@ -85,12 +85,13 @@ class PostManager extends Dbconnect
                     'user_id' => $postUserId
                 ]
             );
+            $sessionError = new SuperglobalManager();
+            return $sessionError->sessionError(5);
 
-            $_SESSION['postAdd'] = 'Your post is add ! </a>';
-            header("Location: index.php?action=managePostAdmin");
         else :
-            $_SESSION['postAdd'] = 'Your post isn\'t add ';
-            header("Location: index.php?action=managePostAdmin");
+            $sessionError = new SuperglobalManager();
+            return $sessionError->sessionError(6);
+
         endif;
     }
     public function deleteAdminPost()
@@ -105,8 +106,8 @@ class PostManager extends Dbconnect
                 'id' => $idPostUser
             ]
         );
-        $_SESSION['postAdd'] = 'Your post is delete ! </a>';
-        header("Location: index.php?action=managePostAdmin");
+        $sessionError = new SuperglobalManager();
+        return $sessionError->sessionError(7);
     }
     public function listUserPost()
     {
@@ -159,8 +160,8 @@ class PostManager extends Dbconnect
                 "id" => $idPostUser
             ]
         );
-        $_SESSION['postModify'] = "Your post has been modified";
-        return $req;
+        $sessionError = new SuperglobalManager();
+        return $sessionError->sessionError(8);
     }
 
     public function listPostValidation(HomeManager $homeManager)

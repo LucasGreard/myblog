@@ -29,7 +29,7 @@ class ModifyPostAdminView extends _DefaultView
     }
 
 
-    public static function render($postManager, $post_Id = null, $homeManager = null): void
+    public static function render($postManager, $post_Id = null, $homeManager = null, $sessionError = null): void
     {
         $obj = new self($postManager);
         echo $obj->rendering;

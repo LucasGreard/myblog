@@ -4,6 +4,7 @@ namespace Models;
 
 use Models\Dbconnect;
 use Exception;
+use Models\SuperglobalManager;
 
 class CommentManager extends Dbconnect
 {
@@ -24,6 +25,7 @@ class CommentManager extends Dbconnect
             FROM comment
             WHERE  
                 post_id =?
+            AND comment_Validation = "Yes"
             ORDER BY comment_Date_Add DESC');
         $req->execute(
             [
@@ -41,7 +43,7 @@ class CommentManager extends Dbconnect
             $commentUserId = $post_id;
             $req = $this->ifCommentExist($commentAuthor, $commentContent, $commentUserId);
             if ($req === '1') :
-                return $_SESSION['commentAdd'] = 'The comment already exists !';
+                return $_SESSION['commentManage'] = 'Comment already exists !';
             elseif ($req === '0') :
                 $userState = htmlentities($_SESSION['userState']);
                 if ($userState == "Admin") :
@@ -63,15 +65,17 @@ class CommentManager extends Dbconnect
                     ]
                 );
                 if ($_SESSION['userState'] == "Admin") :
-                    $_SESSION['commentAdd'] = 'Your comment is add ! </a>';
+                    $sessionError = new SuperglobalManager();
+                    return $sessionError->sessionError(1);
                 else :
-                    $_SESSION['commentAdd'] = 'Your comment must first be validated by the administrator before being visible. 
-                                                Find all your comments awaiting validation <a href ="">here</a>  ! </a>';
+                    $sessionError = new SuperglobalManager();
+                    return $sessionError->sessionError(4);
                 endif;
             endif;
 
         else :
-            $_SESSION['commentAdd'] = 'Your comment isn\'t add ';
+            $sessionError = new SuperglobalManager();
+            return $sessionError->sessionError(2);
         endif;
     }
     public function listCommentValidation(HomeManager $homeManager)
@@ -113,7 +117,6 @@ class CommentManager extends Dbconnect
     public function deleteUserComment()
     {
         $idCommentUser = filter_input(INPUT_POST, 'idCommentUser', FILTER_SANITIZE_NUMBER_INT);
-        $idPostUser = filter_input(INPUT_POST, 'idPostUser', FILTER_SANITIZE_NUMBER_INT);
         $req = $this->dbConnect->prepare('
             DELETE FROM comment
             WHERE id = :id
@@ -123,8 +126,8 @@ class CommentManager extends Dbconnect
                 'id' => $idCommentUser
             ]
         );
-        $_SESSION['CommentAdd'] = 'Your comment is delete ! </a>';
-        header("Location: index.php?action=listComment&id=" . $idPostUser);
+
+        // $_SESSION['commentManage'] = 'Your comment is delete !';
     }
     public function userComments()
     {

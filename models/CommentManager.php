@@ -38,10 +38,9 @@ class CommentManager extends Dbconnect
     public function addUserComment($post_id)
     {
         $sessionError = new SuperglobalManager();
-        if (isset($_POST['contentCommentUser']) && $_POST['contentCommentUser'] != "") :
+        $commentContent = filter_input(INPUT_POST, 'contentCommentUser', FILTER_SANITIZE_STRING);
+        if (isset($commentContent) && $commentContent != "") :
             $commentAuthor = $_SESSION['userLastName'] . " " . $_SESSION['userFirstName'];
-            // $commentAuthor = SuperglobalManager::addSession($_SESSION['userLastName']) . " " . SuperglobalManager::addSession($_SESSION['userFirstName']);
-            $commentContent = htmlentities($_POST['contentCommentUser']);
             $commentUserId = $post_id;
             $req = $this->ifCommentExist($commentAuthor, $commentContent, $commentUserId);
             if ($req === '1') :

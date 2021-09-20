@@ -1,8 +1,5 @@
 <?php
-require_once('_defaultView.php');
-
-use Models\PostManager;
-
+include_once(dirname(__FILE__) . '/_defaultView.php');
 
 class AddPostAdminView extends _DefaultView
 {
@@ -13,7 +10,7 @@ class AddPostAdminView extends _DefaultView
     private $htmlAfter;
     public $rendering;
 
-    private function __construct(PostManager $postManager)
+    private function __construct($postManager)
     {
 
         $this->postManager = $postManager;

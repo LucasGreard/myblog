@@ -1,8 +1,5 @@
 <?php
-require_once('_defaultView.php');
-
-use Models\CommentManager;
-
+include_once(dirname(__FILE__) . '/_defaultView.php');
 class userCommentsView extends _DefaultView
 {
     private $commentManager;
@@ -94,6 +91,6 @@ class userCommentsView extends _DefaultView
         return '
             </div>
         </div>
-';
+        ';
     }
 }

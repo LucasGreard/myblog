@@ -1,6 +1,5 @@
 <?php
 
-use Models\HomeManager;
 use Models\PostManager;
 
 class _DefaultView

@@ -3,11 +3,9 @@
 namespace Models;
 
 use Exception;
-use Models\HomeManager;
 
 class UserManager extends Dbconnect
 {
-    private $userPwd;
     private $dbConnect;
 
     public function __construct()

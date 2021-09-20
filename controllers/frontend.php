@@ -1,20 +1,21 @@
 <?php
-//REQUIRE_ONCE 
-require_once 'Models/PostManager.php';
-require_once 'Models/CommentManager.php';
-require_once 'Models/UserManager.php';
-require_once 'views/postsListView.php';
-require_once 'views/userSignUpView.php';
-require_once 'views/postWithCommentView.php';
-require_once 'views/userLogOnView.php';
-require_once 'views/commentListValidationView.php';
-require_once 'views/userListManageView.php';
-require_once 'views/contactMeView.php';
-require_once 'views/userCommentsView.php';
-require_once 'views/adminManagePostView.php';
-require_once 'views/modifyPostAdminView.php';
-require_once 'views/addPostView.php';
+//INCLUDE FILES 
+include_once(dirname(__FILE__) . '/../models\PostManager.php');
+include_once(dirname(__FILE__) . '/../models\CommentManager.php');
+include_once(dirname(__FILE__) . '/../models\UserManager.php');
 
+include_once(dirname(__FILE__) . '/../views/_defaultView.php');
+include_once(dirname(__FILE__) . '/../views/postsListView.php');
+include_once(dirname(__FILE__) . '/../views/userSignUpView.php');
+include_once(dirname(__FILE__) . '/../views/postWithCommentView.php');
+include_once(dirname(__FILE__) . '/../views/userLogOnView.php');
+include_once(dirname(__FILE__) . '/../views/commentListValidationView.php');
+include_once(dirname(__FILE__) . '/../views/userListManageView.php');
+include_once(dirname(__FILE__) . '/../views/contactMeView.php');
+include_once(dirname(__FILE__) . '/../views/userCommentsView.php');
+include_once(dirname(__FILE__) . '/../views/adminManagePostView.php');
+include_once(dirname(__FILE__) . '/../views/modifyPostAdminView.php');
+include_once(dirname(__FILE__) . '/../views/addPostView.php');
 
 //START : Fonction principale
 function displayHome($homeManager) //Display Home_Page
@@ -39,7 +40,6 @@ function listPosts($postManager) // Display Posts_Page
 //START : Fonction pour les commentaires
 function listPost($postManager, $commentManager, $post_Id) // Display Post_Page with Comments
 {
-
     PostWithCommentView::render($postManager, $commentManager, $post_Id);
 }
 
@@ -149,9 +149,9 @@ function modifyPostAdmin($postManager, $commentManager, $sessionError) // Valida
     PostWithCommentView::render($postManager, $commentManager, $post_Id,  $sessionError);
 }
 
-function addAdminPost($postManager) // Add a Post by an Admin
+function addAdminPost($postManager, $sessionError) // Add a Post by an Admin
 {
-    $sessionError = $postManager->addAdminPost();
+    $sessionError = $postManager->addAdminPost($sessionError);
     ManagePostAdminView::render($postManager, $sessionError);
 }
 

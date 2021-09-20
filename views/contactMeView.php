@@ -1,18 +1,13 @@
 <?php
-require_once('_defaultView.php');
-
-use Models\ContactManager;
-
+include_once(dirname(__FILE__) . '/_defaultView.php');
 class ContactMeView extends _DefaultView
 {
-
-    private $userManage;
     private $htmlBefore;
     private $content;
     private $htmlAfter;
     public $rendering;
 
-    private function __construct(ContactManager $userManage)
+    private function __construct($userManage)
     {
 
         $this->userManage = $userManage;

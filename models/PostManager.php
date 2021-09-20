@@ -53,15 +53,16 @@ class PostManager extends Dbconnect
         displayHome($homeManager);
     }
 
-    public function addAdminPost()
+    public function addAdminPost($sessionError)
     {
-        if (isset($_POST['addHeadingPost']) && isset($_POST['addContentPost']) && $_POST['addHeadingPost'] != "" && $_POST['addContentPost'] != "") :
+        $postHeading = filter_input(INPUT_POST, 'addHeadingPost', FILTER_SANITIZE_STRING);
+        $postChapo = filter_input(INPUT_POST, 'addChapoPost', FILTER_SANITIZE_STRING);
+        $postAuthor = htmlentities($_SESSION['userLastName']) . " " . htmlentities($_SESSION['userFirstName']);
+        $postContent = filter_input(INPUT_POST, 'addContentPost', FILTER_SANITIZE_STRING);
+        $postCategorie = filter_input(INPUT_POST, 'selectCategorieAddPost', FILTER_SANITIZE_STRING);
+        if (isset($postHeading)  && isset($postContent) && isset($postChapo) && $postHeading != "" && $postChapo != "" && $postContent != "") :
 
-            $postHeading = filter_input(INPUT_POST, 'addHeadingPost', FILTER_SANITIZE_STRING);
-            $postChapo = filter_input(INPUT_POST, 'addChapoPost', FILTER_SANITIZE_STRING);
-            $postAuthor = htmlentities($_SESSION['userLastName']) . " " . htmlentities($_SESSION['userFirstName']);
-            $postContent = filter_input(INPUT_POST, 'addContentPost', FILTER_SANITIZE_STRING);
-            $postCategorie = filter_input(INPUT_POST, 'selectCategorieAddPost', FILTER_SANITIZE_STRING);
+
             $postUserId = $_SESSION['idUser'];
             $userState = htmlentities($_SESSION['userState']);
 
@@ -85,11 +86,9 @@ class PostManager extends Dbconnect
                     'user_id' => $postUserId
                 ]
             );
-            $sessionError = new SuperglobalManager();
             return $sessionError->sessionError(5);
 
         else :
-            $sessionError = new SuperglobalManager();
             return $sessionError->sessionError(6);
 
         endif;

@@ -1,9 +1,5 @@
 <?php
-require_once('_defaultView.php');
-
-use Models\CommentManager;
-use Models\PostManager;
-
+include_once(dirname(__FILE__) . '/_defaultView.php');
 class PostWithCommentView extends _DefaultView
 {
     private $postManager;
@@ -35,7 +31,7 @@ class PostWithCommentView extends _DefaultView
 
     public static function render($commentManager, $post_Id = null, $postManager = null, $sessionError = null): void
     {
-        $obj = new self($commentManager, $post_Id, $postManager,  $sessionError);
+        $obj = new self($commentManager, $post_Id, $postManager, $sessionError);
         print_r($obj->rendering);
     }
 
@@ -50,7 +46,7 @@ class PostWithCommentView extends _DefaultView
 
 
         $this->content = "";
-        $listPost = $this->postManager->listUniquePost($this->post_id);
+        $listPost = $this->postManager->listUniquePost($this->post_Id);
         if (!empty($listPost)) :
             foreach ($listPost as $data) :
 
@@ -97,7 +93,7 @@ class PostWithCommentView extends _DefaultView
                 if (isset($_SESSION['idUser'])) :
                     $userState = htmlentities($_SESSION['userState']);
                     if ($userState != "Guest") :
-                        $this->content .= isset($sessionError) ? '<div class="text-center" id="alert">' . $sessionError . '</div>' : false;
+                        $this->content .= isset($this->sessionError) ? '<div class="text-center" id="alert">' . $this->sessionError . '</div>' : false;
                         $this->content .= '
                                     
                                                 <form class="mb-4" method="POST" action="index.php?action=addUserComment&id=' . $data['id'] . '&#alert">
@@ -127,7 +123,7 @@ class PostWithCommentView extends _DefaultView
         else :
             header("Location: index.php");
         endif;
-        $listComment = $this->commentManager->listComment($this->post_id);
+        $listComment = $this->commentManager->listComment($this->post_Id);
         foreach ($listComment as $data) :
             $this->content .= '      <!-- Comment with nested comments-->
                                             <div class="d-flex mb-4">
@@ -143,7 +139,7 @@ class PostWithCommentView extends _DefaultView
                 $userFirstName = htmlentities($_SESSION['userFirstName']);
                 if ($userState == "Admin" || $userLastName . " " . $userFirstName == $data['comment_Author']) :
                     $this->content .= '
-                                                <form class="p-1" action="index.php?action=validAndDeleteCommentUser" method="POST">
+                                                <form class="p-1" action="index.php?action=validAndDeleteCommentUser&#alert" method="POST">
                                                     <input name="idCommentUser" type="hidden" value="' . $data[0] . '">
                                                     <input name="idPostAdmin" type="hidden" value="' . $data[5] . '">
                                                     <input name="namePage" type="hidden" value="manageCommentsDirectlyOnPost">
@@ -154,7 +150,6 @@ class PostWithCommentView extends _DefaultView
             $this->content .= '
                                             </div>';
         endforeach;
-        $postManager = $this->postManager->listUniquePost($this->post_id);
         $this->content .= '
                                     </div>
                                     </div>

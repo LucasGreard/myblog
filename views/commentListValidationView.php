@@ -1,5 +1,5 @@
 <?php
-require_once('_defaultView.php');
+include_once(dirname(__FILE__) . '/_defaultView.php');
 
 use Models\HomeManager;
 

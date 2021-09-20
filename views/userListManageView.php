@@ -1,8 +1,5 @@
 <?php
-require_once('_defaultView.php');
-
-use Models\HomeManager;
-use Models\UserManager;
+include_once(dirname(__FILE__) . '/_defaultView.php');
 
 class UserListManageView extends _DefaultView
 {

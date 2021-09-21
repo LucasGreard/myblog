@@ -1,6 +1,7 @@
 <?php
 
 use Models\PostManager;
+use Models\SuperglobalManager;
 
 class _DefaultView
 {
@@ -12,7 +13,6 @@ class _DefaultView
 
     private function __construct($homeManager)
     {
-
         $this->homeManager = $homeManager;
 
         $this->_getHtmlBefore();
@@ -27,6 +27,7 @@ class _DefaultView
 
     public function getHeader()
     {
+        $sessionTest = new SuperglobalManager(); //Initialize session
         $header = '
             <!DOCTYPE html>
             <html lang="en">
@@ -51,13 +52,8 @@ class _DefaultView
                         <a class="navbar-brand" href="index.php">Hi, 
                         ';
 
-        if (isset($_SESSION['userFirstName'])) :
-
-            $userFirstName = htmlentities($_SESSION['userFirstName']);
-            $header .= $userFirstName . " !";
-        else :
-            $header .= "World !";
-        endif;
+        $useSession = $sessionTest->getSession('userFirstName');
+        $header .= isset($useSession) ? $useSession . " !" : "World !";
 
         $header .= '
                         </a>
@@ -73,23 +69,21 @@ class _DefaultView
                                 <li class="nav-item">
                                     <a class="nav-link" href="index.php?action=contactMe">Contact me</a>
                                 </li>';
-
-        if (isset($_SESSION['userLastName']) && isset($_SESSION['userFirstName'])) :
-            $userLastName = htmlentities($_SESSION['userLastName']);
-            $userFirstName = htmlentities($_SESSION['userFirstName']);
+        $sessionUserLastName = $sessionTest->getSession('userLastName');
+        $sessionUserFirstName = $sessionTest->getSession('userFirstName');
+        if (isset($sessionUserLastName) && isset($sessionUserFirstName)) :
             $header .= '        <li class="nav-item dropdown">
                                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                        ' . $userFirstName . " " . $userLastName . '
+                                        ' . $sessionUserLastName . " " . $sessionUserFirstName . '
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                         <a class="dropdown-item" href="index.php?action=userLogOn">My settings</a>';
-
-            if (isset($_SESSION['userState'])) :
-                $userState = htmlentities($_SESSION['userState']);
-                if ($userState != "Guest") :
+            $sessionUserState = $sessionTest->getSession('userState');
+            if (isset($sessionUserState)) :
+                if ($sessionUserState != "Guest") :
                     $header .= '                <a class="dropdown-item" href="index.php?action=userComments">My comments</a>';
                 endif;
-                if ($userState === "Admin") :
+                if ($sessionUserState === "Admin") :
                     $header .= '            <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="index.php?action=listCommentValidation">Manage Comments</a>
                                         ';
@@ -122,6 +116,7 @@ class _DefaultView
 
     public function getFooter()
     {
+        $sessionTest = new SuperglobalManager(); //Initialize session
         $footer = '
         <!-- Footer-->
         <footer class="py-5 bg-dark">
@@ -149,8 +144,9 @@ class _DefaultView
                     <div class="footer-col col-md-4">
                         <h3 class="text-white">About You</h3>
                         <ul class="list-group">';
-        if (isset($_SESSION['VerifConnection'])) :
-            $userLastName = htmlentities($_SESSION['userLastName']);
+        $sessionVerifConnexion = $sessionTest->getSession('VerifConnexion');
+        if (isset($sessionVerifConnexion)) :
+            $userLastName = $sessionTest->getSession('userLastName');
             $footer .= '
                             <p>
                                 <a class="btn btn-outline-info" href="index.php?action=userLogOn">My Account,' . $userLastName . '</a>

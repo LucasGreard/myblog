@@ -3,6 +3,7 @@
 namespace Models;
 
 use Exception;
+use Models\SuperglobalManager;
 
 class UserManager extends Dbconnect
 {
@@ -76,19 +77,19 @@ class UserManager extends Dbconnect
                     );
                     //On met les données dans $_SESSION
                     if ($userInfo = $req->fetch()) :
-                        $_SESSION['idUser'] = $userInfo['id'];
-                        $_SESSION['userLastName'] = $userInfo['user_Lastname'];
-                        $_SESSION['userFirstName'] = $userInfo['user_Firstname'];
-                        $_SESSION['userPhone'] = $userInfo['user_Phone'];
-                        $_SESSION['userMail'] = $userInfo['user_Mail'];
-                        $_SESSION['VerifConnection'] = 1;
-                        $_SESSION['userState'] = $userInfo['user_State'];
+                        SuperglobalManager::putSession('idUser', $userInfo['id']);
+                        SuperglobalManager::putSession('userLastName', $userInfo['user_Lastname']);
+                        SuperglobalManager::putSession('userFirstName', $userInfo['user_Firstname']);
+                        SuperglobalManager::putSession('userPhone', $userInfo['user_Phone']);
+                        SuperglobalManager::putSession('userMail', $userInfo['user_Mail']);
+                        SuperglobalManager::putSession('VerifConnexion', 1);
+                        SuperglobalManager::putSession('userState', $userInfo['user_State']);
                         return $userInfo;
                     else :
-                        $_SESSION['connexionLose'] = "USERNAME OR PASSWORD INCORRECT";
+                        SuperglobalManager::putSession('connexionLose', "USERNAME OR PASSWORD INCORRECT");
                     endif;
                 else :
-                    $_SESSION['connexionLose'] = "USERNAME OR PASSWORD INCORRECT";
+                    SuperglobalManager::putSession('connexionLose', "USERNAME OR PASSWORD INCORRECT");
                 endif;
             endif;
         endif;
@@ -110,7 +111,7 @@ class UserManager extends Dbconnect
             if (isset($userPwd) && isset($userPwd2) && ($userPwd === $userPwd2) && $userPwd != "" && $userPwd2 != "") : //Si les deux mots de passes sont identiques et existent
                 $req = $this->ifUserExist($userPhone, $userMail);
                 if ($req === '1') :
-                    return $_SESSION['userExist'] = 'User already exists !';
+                    return $sessionError->sessionError(16);
                 elseif ($req === '0') :
                     $userPwd = $this->passwordHash($userPwd);
                     $req = $this->dbConnect->prepare('
@@ -146,7 +147,8 @@ class UserManager extends Dbconnect
     //Modification des coordonnées de l'utilisateur
     public function modifyCoorUser()
     {
-        $idUser = htmlentities($_SESSION['idUser']);
+
+        $idUser = SuperglobalManager::getSession('idUser');
         if (isset($idUser)) :
             $userLastName = filter_input(INPUT_POST, 'userLastName', FILTER_SANITIZE_STRING);
             $userFirstName = filter_input(INPUT_POST, 'userFirstName', FILTER_SANITIZE_STRING);
@@ -168,11 +170,10 @@ class UserManager extends Dbconnect
                     $idUser
                 ]
             );
-            $_SESSION['userLastName'] = $userLastName;
-            $_SESSION['userFirstName'] = $userFirstName;
-            $_SESSION['userPhone'] = $userPhone;
-            $_SESSION['userMail'] = $userMail;
-
+            SuperglobalManager::putSession('userLastName', $userLastName);
+            SuperglobalManager::putSession('userFirstName', $userFirstName);
+            SuperglobalManager::putSession('userPhone', $userPhone);
+            SuperglobalManager::putSession('userMail', $userMail);
             $sessionError = new SuperglobalManager();
             return $sessionError->sessionError(9);
         else :
@@ -183,9 +184,10 @@ class UserManager extends Dbconnect
     //Affiche les USERS via l'ADMIN
     public function listUserManage($homeManager)
     {
-        $verifConnection = htmlentities($_SESSION['VerifConnection']);
-        $userState = htmlentities($_SESSION['userState']);
-        if (isset($verifConnection) && $userState == "Admin") :
+
+        $verifConnexion = SuperglobalManager::getSession('VerifConnexion');
+        $userState = SuperglobalManager::getSession('userState');
+        if (isset($verifConnexion) && $userState == "Admin") :
             $req = '
             SELECT *
             FROM user 
@@ -201,6 +203,7 @@ class UserManager extends Dbconnect
     //Détruit un USER
     public function deleteUser()
     {
+        $sessionError = new SuperglobalManager();
         $idUser = filter_input(INPUT_POST, 'idUser', FILTER_SANITIZE_NUMBER_INT);
         $req = $this->dbConnect->prepare('
             DELETE FROM user
@@ -211,10 +214,11 @@ class UserManager extends Dbconnect
                 'id' => $idUser
             ]
         );
-        $_SESSION['userManage'] = 'User was delete !';
+        $sessionError->sessionError(13);
     }
     public function acceptUser()
     {
+        $sessionError = new SuperglobalManager();
         $idUser = filter_input(INPUT_POST, 'idUser', FILTER_SANITIZE_NUMBER_INT);
         $req = $this->dbConnect->prepare('
             UPDATE user
@@ -226,6 +230,6 @@ class UserManager extends Dbconnect
                 'id' => $idUser
             ]
         );
-        $_SESSION['userManage'] = 'User was accept !';
+        $sessionError->sessionError(12);
     }
 }

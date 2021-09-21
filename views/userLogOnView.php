@@ -1,6 +1,8 @@
 <?php
 include_once(dirname(__FILE__) . '/_defaultView.php');
 
+use Models\SuperglobalManager;
+
 class UserLogOnView extends _DefaultView
 {
 
@@ -13,7 +15,6 @@ class UserLogOnView extends _DefaultView
 
     private function __construct($sessionError)
     {
-
         $this->sessionError = $sessionError;
         $this->_getHtmlBefore();
         $this->_getContent($sessionError);
@@ -70,15 +71,16 @@ class UserLogOnView extends _DefaultView
 
     private function _getContent($sessionError)
     {
+        $sessionTest = new SuperglobalManager();
         $this->content = "";
-        if (isset($_SESSION['VerifConnection'])) :
-            $userLastName = htmlentities($_SESSION['userLastName']);
-            $userFirstName = htmlentities($_SESSION['userFirstName']);
-            $userPhone = htmlentities($_SESSION['userPhone']);
-            $userMail = htmlentities($_SESSION['userMail']);
-            $userState = htmlentities($_SESSION['userState']);
+        $sessionVerifConnexion = $sessionTest->getSession('VerifConnexion');
+        if (isset($sessionVerifConnexion)) :
+            $userLastName = $sessionTest->getSession('userLastName');
+            $userFirstName = $sessionTest->getSession('userFirstName');
+            $userPhone = $sessionTest->getSession('userPhone');
+            $userMail = $sessionTest->getSession('userMail');
+            $userState = $sessionTest->getSession('userState');
             $this->content .= isset($sessionError) ? '<div class="text-center" id="alert">' . $sessionError . '</div>' : false;
-
 
             $this->content .= '
                 <div class="col-3">
@@ -156,6 +158,12 @@ class UserLogOnView extends _DefaultView
                 $connexionLose = htmlentities($_SESSION['connexionLose']);
                 $this->content .= '<h5>' . $connexionLose . '</h5>';
                 unset($_SESSION['connexionLose']);
+
+
+            // if (isset($sessiontest)) :
+            //     $test = 'userFirstName';
+            //     $sessiontest->getSession($test);
+            //     $header .= $sessiontest . " !";
             endif;
             $this->content .= '
                     <button type="submit" class="btn btn-dark ">Submit</button> If you don\'t have an account, <a href="index.php?action=viewUserSignUp" class="">register !</a>

@@ -6,6 +6,8 @@ namespace Models;
 
 class SuperglobalManager
 {
+    public $session;
+    private $sessionError;
     public function __toString()
     {
         return $this->sessionError;
@@ -64,10 +66,23 @@ class SuperglobalManager
             case '15':
                 return $this->sessionError = 'Passwords are not identical ! Retry';
 
+            case '16':
+                return $this->sessionError = 'User already exists !';
+
         endswitch;
     }
-    public static function addSession($userInfo)
+    public static function putSession($key, $value)
     {
-        return $_SESSION[$userInfo];
+        $_SESSION[$key] = $value;
+    }
+
+    public static function getSession($key)
+    {
+        return (isset($_SESSION[$key]) ? $_SESSION[$key] : null);
+    }
+
+    public static function forgetSession($key)
+    {
+        unset($_SESSION[$key]);
     }
 }

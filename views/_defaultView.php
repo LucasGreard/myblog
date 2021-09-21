@@ -144,7 +144,7 @@ class _DefaultView
                     <div class="footer-col col-md-4">
                         <h3 class="text-white">About You</h3>
                         <ul class="list-group">';
-        $sessionVerifConnexion = $sessionTest->getSession('VerifConnexion');
+        $sessionVerifConnexion = $sessionTest->getSession('verifConnexion');
         if (isset($sessionVerifConnexion)) :
             $userLastName = $sessionTest->getSession('userLastName');
             $footer .= '

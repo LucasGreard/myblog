@@ -59,7 +59,6 @@ class commentListValidationView extends _DefaultView
     private function _getContent()
     {
         $this->content = "";
-        var_dump($this->sessionError);
         $this->content .= isset($this->sessionError) ? '<div class="text-center" id="alert">' . $this->sessionError . '</div>' : false;
         $homeManager = new HomeManager();
         $istCommentValidation = $this->commentManager->listCommentValidation($homeManager);

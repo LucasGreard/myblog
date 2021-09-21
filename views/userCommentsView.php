@@ -1,6 +1,7 @@
 <?php
 include_once(dirname(__FILE__) . '/_defaultView.php');
 
+use Models\CommentManager;
 use Models\SuperglobalManager;
 
 class userCommentsView extends _DefaultView

@@ -41,8 +41,8 @@ class UserLogOnView extends _DefaultView
         <header class="py-5 bg-light border-bottom mb-4">
             <div class="container">
                 <div class="text-center my-5">';
-        $VerifConnexion = SuperglobalManager::getSession('VerifConnexion');
-        if (isset($VerifConnexion)) :
+        $sessionVerifConnexion = SuperglobalManager::getSession('verifConnexion');
+        if (isset($sessionVerifConnexion)) :
             $this->htmlBefore .= '        
                     <h1 class="fw-bolder">If it\'s you, it\'s your contact details :)</h1>
                     <p class="lead mb-0 fst-italic">Modify what you want !</p>
@@ -73,7 +73,7 @@ class UserLogOnView extends _DefaultView
     {
         $sessionTest = new SuperglobalManager();
         $this->content = "";
-        $sessionVerifConnexion = $sessionTest->getSession('VerifConnexion');
+        $sessionVerifConnexion = $sessionTest->getSession('verifConnexion');
         if (isset($sessionVerifConnexion)) :
             $userLastName = $sessionTest->getSession('userLastName');
             $userFirstName = $sessionTest->getSession('userFirstName');

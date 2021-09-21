@@ -78,9 +78,9 @@ class CommentManager extends Dbconnect
     }
     public function listCommentValidation($homeManager)
     {
-        $verifConnexion = SuperglobalManager::getSession('verifConnexion');
+        $sessionVerifConnexion = SuperglobalManager::getSession('verifConnexion');
         $userState = SuperglobalManager::getSession('userState');
-        if (isset($verifConnexion) && $userState == "Admin") :
+        if (isset($sessionVerifConnexion) && $userState == "Admin") :
             $req = '
             SELECT *
             FROM comment as c 
@@ -95,9 +95,9 @@ class CommentManager extends Dbconnect
     }
     public function valideCommentUser()
     {
-        $verifConnexion = SuperglobalManager::getSession('verifConnexion');
+        $sessionVerifConnexion = SuperglobalManager::getSession('verifConnexion');
         $userState = SuperglobalManager::getSession('userState');
-        if (isset($verifConnexion) && $userState === "Admin") :
+        if (isset($sessionVerifConnexion) && $userState === "Admin") :
             $idCommentUser = filter_input(INPUT_POST, 'idCommentUser', FILTER_SANITIZE_NUMBER_INT);
             $req = $this->dbConnect->prepare('
             UPDATE comment
@@ -127,10 +127,11 @@ class CommentManager extends Dbconnect
     public function userComments()
     {
         $homeManager = new HomeManager();
-        $verifConnexion = SuperglobalManager::getSession('verifConnexion');
+        $sessionVerifConnexion = SuperglobalManager::getSession('verifConnexion');
+
         $userLastName = SuperglobalManager::getSession('userLastName');
         $userFirstName = SuperglobalManager::getSession('userFirstName');
-        if (isset($verifConnexion)) :
+        if (isset($sessionVerifConnexion)) :
             $req = $this->dbConnect->prepare('
             SELECT *
             FROM comment

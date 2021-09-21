@@ -34,9 +34,9 @@ class PostManager extends Dbconnect
     public function listUserPosts() //Affiche la liste des posts d'un utilisateur
     {
         $homeManager = new HomeManager();
-        $verifConnexion = SuperglobalManager::getSession('verifConnexion');
+        $sessionVerifConnexion = SuperglobalManager::getSession('verifConnexion');
         $idUser = SuperglobalManager::getSession('idUser');
-        if (isset($verifConnexion)) :
+        if (isset($sessionVerifConnexion)) :
 
             $req = $this->dbConnect->prepare('
             SELECT *
@@ -165,9 +165,9 @@ class PostManager extends Dbconnect
 
     public function listPostValidation(HomeManager $homeManager)
     {
-        $verifConnexion = SuperglobalManager::getSession('verifConnexion');
+        $sessionVerifConnexion = SuperglobalManager::getSession('verifConnexion');
 
-        if (isset($verifConnexion) && $verifConnexion == "Admin") :
+        if (isset($sessionVerifConnexion) && $sessionVerifConnexion == "Admin") :
             $req = '
             SELECT *
             FROM post 
@@ -182,8 +182,8 @@ class PostManager extends Dbconnect
     }
     public function valideUserPost()
     {
-        $verifConnexion = SuperglobalManager::getSession('verifConnexion');
-        if (isset($verifConnexion) && $verifConnexion  == "Admin") :
+        $sessionVerifConnexion = SuperglobalManager::getSession('verifConnexion');
+        if (isset($sessionVerifConnexion) && $sessionVerifConnexion  == "Admin") :
             $idPostUser = filter_input(INPUT_POST, 'idPostUser', FILTER_SANITIZE_NUMBER_INT);
             $req = $this->dbConnect->prepare('
             UPDATE post

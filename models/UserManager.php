@@ -82,7 +82,7 @@ class UserManager extends Dbconnect
                         SuperglobalManager::putSession('userFirstName', $userInfo['user_Firstname']);
                         SuperglobalManager::putSession('userPhone', $userInfo['user_Phone']);
                         SuperglobalManager::putSession('userMail', $userInfo['user_Mail']);
-                        SuperglobalManager::putSession('VerifConnexion', 1);
+                        SuperglobalManager::putSession('verifConnexion', "1");
                         SuperglobalManager::putSession('userState', $userInfo['user_State']);
                         return $userInfo;
                     else :
@@ -185,9 +185,9 @@ class UserManager extends Dbconnect
     public function listUserManage($homeManager)
     {
 
-        $verifConnexion = SuperglobalManager::getSession('VerifConnexion');
+        $sessionVerifConnexion = SuperglobalManager::getSession('VerifConnexion');
         $userState = SuperglobalManager::getSession('userState');
-        if (isset($verifConnexion) && $userState == "Admin") :
+        if (isset($sessionVerifConnexion) && $userState == "Admin") :
             $req = '
             SELECT *
             FROM user 

@@ -1,0 +1,2 @@
+# myblog
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/19ad2a9bdf0843b4a79094fe67728392)](https://app.codacy.com/gh/LucasGreard/myblog?utm_source=github.com&utm_medium=referral&utm_content=LucasGreard/myblog&utm_campaign=Badge_Grade_Settings)

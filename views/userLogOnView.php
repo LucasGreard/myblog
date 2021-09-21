@@ -113,11 +113,11 @@ class UserLogOnView extends _DefaultView
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-2"></div>
-                            <div class="col-3">
+                            
+                            <div class="col text-center">
                                 <button type="submit" class="btn btn-warning text-center">Save information</button>
                             </div>
-                            <div class="col-3">
+                            <div class="col text-center">
                                 <a href="index.php?action=deleteSession">
                                 <button type="button" class="btn btn-danger">Disconnect</button>
                                 </a>

@@ -3,6 +3,7 @@
 namespace Models;
 
 use Exception;
+use Models\SuperglobalManager;
 
 class ContactManager extends Dbconnect
 {
@@ -16,28 +17,9 @@ class ContactManager extends Dbconnect
     /**
      * @throws exception
      */
-    public function __setTo()
+    function sendMessage($mailUserSend, $messageUserSend)
     {
-        return $this->to = "lucas.greard07@gmail.com";
-    }
-
-    public function setTo($to): void
-    {
-        $this->to = $to;
-    }
-
-    public function getTo(): string
-    {
-        // aller cherche l'email du user avec id 1 ou droit admin
-        return $this->to;
-    }
-
-    function sendMessage()
-    {
-        $emailContact = filter_input(INPUT_POST, 'emailContact', FILTER_SANITIZE_EMAIL);
-        $messageContact = filter_input(INPUT_POST, 'messageContact', FILTER_SANITIZE_STRING);
-        if (isset($emailContact) && isset($messageContact)) :
-
-        endif;
+        $userName = SuperglobalManager::getSession('userLastName') . " " . SuperglobalManager::getSession('userFirstName');
+        return mail($mailUserSend, "Mail from" . $userName, $messageUserSend);
     }
 }

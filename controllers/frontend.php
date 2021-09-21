@@ -108,9 +108,17 @@ function contactMe($contactManager) // Display Contact_Page
     ContactMeView::render($contactManager);
 }
 
-function messageSend($contactManager) // Send message (Contact_Page)
+function messageSend($contactManager, $sessionError) // Send message (Contact_Page)
 {
-    ContactMeView::render($contactManager);
+    $mailUserSend = filter_input(INPUT_POST, 'mailUserSend', FILTER_SANITIZE_STRING);
+    $messageUserSend = filter_input(INPUT_POST, 'messageUserSend', FILTER_SANITIZE_STRING);
+    $testSendMessage = $contactManager->sendMessage($mailUserSend, $messageUserSend);
+    if ($testSendMessage == true) :
+        $sessionError = $sessionError->sessionError(17);
+    else :
+        $sessionError = $sessionError->sessionError(18);
+    endif;
+    ContactMeView::render($contactManager, $sessionError);
 }
 //END : Me contacter
 

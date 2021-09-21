@@ -47,7 +47,7 @@ class _DefaultView
                 </head>
                 <body>
                 <!-- Responsive navbar-->
-                <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
                     <div class="container">
                         <a class="navbar-brand" href="index.php">Hi, 
                         ';

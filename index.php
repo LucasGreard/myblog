@@ -80,7 +80,7 @@ switch ($actionUrl):
         break;
 
     case 'messageSend':
-        messageSend($contactManager); // Send message
+        messageSend($contactManager, $sessionError); // Send message
         break;
         //END : CONTACT
 

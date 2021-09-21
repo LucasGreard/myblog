@@ -68,6 +68,12 @@ class SuperglobalManager
 
             case '16':
                 return $this->sessionError = 'User already exists !';
+                //MANAGE CONTACT ERROR 
+            case '17':
+                return $this->sessionError = 'Message send ! ';
+            case '18':
+                return $this->sessionError = 'Message not send ! ';
+
 
         endswitch;
     }

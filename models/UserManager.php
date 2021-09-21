@@ -185,13 +185,13 @@ class UserManager extends Dbconnect
     public function listUserManage($homeManager)
     {
 
-        $sessionVerifConnexion = SuperglobalManager::getSession('VerifConnexion');
+        $sessionVerifConnexion = SuperglobalManager::getSession('verifConnexion');
         $userState = SuperglobalManager::getSession('userState');
         if (isset($sessionVerifConnexion) && $userState == "Admin") :
             $req = '
             SELECT *
             FROM user 
-            WHERE user_State = "Guest" OR user_State ="Moderator" OR user_State ="User"
+            WHERE user_State NOT LIKE "Admin"
             ORDER BY user_Lastname ASC
             ';
             $db = $this->dbConnect();

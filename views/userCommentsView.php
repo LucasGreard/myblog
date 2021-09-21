@@ -1,5 +1,8 @@
 <?php
 include_once(dirname(__FILE__) . '/_defaultView.php');
+
+use Models\SuperglobalManager;
+
 class userCommentsView extends _DefaultView
 {
     private $commentManager;
@@ -52,6 +55,7 @@ class userCommentsView extends _DefaultView
 
     private function _getContent()
     {
+
         $userListComments = $this->commentManager->userComments();
         $this->content = "";
 
@@ -65,9 +69,9 @@ class userCommentsView extends _DefaultView
                         <li class="list-group-item disabled">Date : ' . $data['comment_Date_Add'] . ' </li>
                         <li class="list-group-item disabled">Status : ' . $data['comment_Validation'] . ' </li>
                         <a href="index.php?action=listPost&id=' . $data['post_id'] . ' " class="btn btn-outline-dark">Voir le post en entier</a>';
-            if (isset($_SESSION['userLastName']) && isset($_SESSION['userFirstName'])) :
-                $userLastName = htmlentities($_SESSION['userLastName']);
-                $userFirstName = htmlentities($_SESSION['userFirstName']);
+            $userLastName = SuperglobalManager::getSession('userLastName');
+            $userFirstName = SuperglobalManager::getSession('userFirstName');
+            if (isset($userLastName) && isset($userFirstName)) :
                 if (($userLastName . " " . $userFirstName) === $data['comment_Author']) :
 
                     $this->content .= ' 

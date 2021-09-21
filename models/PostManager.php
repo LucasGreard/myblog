@@ -34,9 +34,9 @@ class PostManager extends Dbconnect
     public function listUserPosts() //Affiche la liste des posts d'un utilisateur
     {
         $homeManager = new HomeManager();
-        $verifConnection = htmlentities($_SESSION['VerifConnection']);
-        $idUser = htmlentities($_SESSION['idUser']);
-        if (isset($verifConnection)) :
+        $verifConnexion = SuperglobalManager::getSession('verifConnexion');
+        $idUser = SuperglobalManager::getSession('idUser');
+        if (isset($verifConnexion)) :
 
             $req = $this->dbConnect->prepare('
             SELECT *
@@ -57,14 +57,15 @@ class PostManager extends Dbconnect
     {
         $postHeading = filter_input(INPUT_POST, 'addHeadingPost', FILTER_SANITIZE_STRING);
         $postChapo = filter_input(INPUT_POST, 'addChapoPost', FILTER_SANITIZE_STRING);
-        $postAuthor = htmlentities($_SESSION['userLastName']) . " " . htmlentities($_SESSION['userFirstName']);
+
+        $postAuthor = SuperglobalManager::getSession('userLastName') . " " . SuperglobalManager::getSession('userFirstName');
         $postContent = filter_input(INPUT_POST, 'addContentPost', FILTER_SANITIZE_STRING);
         $postCategorie = filter_input(INPUT_POST, 'selectCategorieAddPost', FILTER_SANITIZE_STRING);
         if (isset($postHeading)  && isset($postContent) && isset($postChapo) && $postHeading != "" && $postChapo != "" && $postContent != "") :
 
 
-            $postUserId = $_SESSION['idUser'];
-            $userState = htmlentities($_SESSION['userState']);
+            $postUserId = SuperglobalManager::getSession('idUser');;
+            $userState = SuperglobalManager::getSession('userState');
 
             if ($userState === "Admin") :
                 $postValidation = "Yes";
@@ -164,8 +165,9 @@ class PostManager extends Dbconnect
 
     public function listPostValidation(HomeManager $homeManager)
     {
-        $verifConnection = htmlentities($_SESSION['VerifConnection']);
-        if (isset($verifConnection) && $verifConnection == "Admin") :
+        $verifConnexion = SuperglobalManager::getSession('verifConnexion');
+
+        if (isset($verifConnexion) && $verifConnexion == "Admin") :
             $req = '
             SELECT *
             FROM post 
@@ -180,8 +182,8 @@ class PostManager extends Dbconnect
     }
     public function valideUserPost()
     {
-        $verifConnection = htmlentities($_SESSION['VerifConnection']);
-        if (isset($verifConnection) && $verifConnection  == "Admin") :
+        $verifConnexion = SuperglobalManager::getSession('verifConnexion');
+        if (isset($verifConnexion) && $verifConnexion  == "Admin") :
             $idPostUser = filter_input(INPUT_POST, 'idPostUser', FILTER_SANITIZE_NUMBER_INT);
             $req = $this->dbConnect->prepare('
             UPDATE post

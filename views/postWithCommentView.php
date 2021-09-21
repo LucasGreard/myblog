@@ -1,5 +1,8 @@
 <?php
 include_once(dirname(__FILE__) . '/_defaultView.php');
+
+use Models\SuperglobalManager;
+
 class PostWithCommentView extends _DefaultView
 {
     private $postManager;
@@ -43,8 +46,6 @@ class PostWithCommentView extends _DefaultView
 
     private function _getContent()
     {
-
-
         $this->content = "";
         $listPost = $this->postManager->listUniquePost($this->post_Id);
         if (!empty($listPost)) :
@@ -89,9 +90,9 @@ class PostWithCommentView extends _DefaultView
                                             <div class="card-body">
                                                 <!-- Comment form-->
                                                 ';
-
-                if (isset($_SESSION['idUser'])) :
-                    $userState = htmlentities($_SESSION['userState']);
+                $idUser = SuperglobalManager::getSession('idUser');
+                if (isset($idUser)) :
+                    $userState = SuperglobalManager::getSession('userState');
                     if ($userState != "Guest") :
                         $this->content .= isset($this->sessionError) ? '<div class="text-center" id="alert">' . $this->sessionError . '</div>' : false;
                         $this->content .= '
@@ -133,10 +134,10 @@ class PostWithCommentView extends _DefaultView
                                                     ' . $data['comment_Content'] . '
                                                     
                                                 </div>';
-            if (isset($_SESSION['userState'])) :
-                $userState = htmlentities($_SESSION['userState']);
-                $userLastName = htmlentities($_SESSION['userLastName']);
-                $userFirstName = htmlentities($_SESSION['userFirstName']);
+            $userState = SuperglobalManager::getSession('userState');
+            if (isset($userState)) :
+                $userLastName = SuperglobalManager::getSession('userLastName');
+                $userFirstName = SuperglobalManager::getSession('userFirstName');
                 if ($userState == "Admin" || $userLastName . " " . $userFirstName == $data['comment_Author']) :
                     $this->content .= '
                                                 <form class="p-1" action="index.php?action=validAndDeleteCommentUser&#alert" method="POST">

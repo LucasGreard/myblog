@@ -17,6 +17,7 @@ include_once(dirname(__FILE__) . '/../views/adminManagePostView.php');
 include_once(dirname(__FILE__) . '/../views/modifyPostAdminView.php');
 include_once(dirname(__FILE__) . '/../views/addPostView.php');
 
+use Models\SuperglobalManager;
 //START : Fonction principale
 function displayHome($homeManager) //Display Home_Page
 {
@@ -141,8 +142,9 @@ function managePostAdmin($postManager, $sessionError) // Delete - Edit - Add a P
 
 function modifyPostAdmin($postManager, $commentManager, $sessionError) // Validate modify Post by an Admin
 {
+
     $post_Id = filter_input(INPUT_POST, 'idPostAdmin', FILTER_SANITIZE_NUMBER_INT);
-    $userState = $_SESSION['userState'];
+    $userState = SuperglobalManager::getSession('userState');
     if ($userState === "Admin") :
         $sessionError = $postManager->modifyUserPost($sessionError);
     endif;

@@ -41,8 +41,8 @@ class UserLogOnView extends _DefaultView
         <header class="py-5 bg-light border-bottom mb-4">
             <div class="container">
                 <div class="text-center my-5">';
-
-        if (isset($_SESSION['VerifConnection'])) :
+        $VerifConnexion = SuperglobalManager::getSession('VerifConnexion');
+        if (isset($VerifConnexion)) :
             $this->htmlBefore .= '        
                     <h1 class="fw-bolder">If it\'s you, it\'s your contact details :)</h1>
                     <p class="lead mb-0 fst-italic">Modify what you want !</p>
@@ -153,18 +153,7 @@ class UserLogOnView extends _DefaultView
                         <label class="form-check-label" for="exampleCheck1">Check me out</label>
                     </div>
                     ';
-
-            if (isset($_SESSION['connexionLose'])) :
-                $connexionLose = htmlentities($_SESSION['connexionLose']);
-                $this->content .= '<h5>' . $connexionLose . '</h5>';
-                unset($_SESSION['connexionLose']);
-
-
-            // if (isset($sessiontest)) :
-            //     $test = 'userFirstName';
-            //     $sessiontest->getSession($test);
-            //     $header .= $sessiontest . " !";
-            endif;
+            $this->content .= isset($this->sessionError) ? '<div class="text-center" id="alert">' . $this->sessionError . '</div>' : false;
             $this->content .= '
                     <button type="submit" class="btn btn-dark ">Submit</button> If you don\'t have an account, <a href="index.php?action=viewUserSignUp" class="">register !</a>
                 </form>

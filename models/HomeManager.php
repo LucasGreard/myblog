@@ -17,6 +17,6 @@ class HomeManager extends Dbconnect
      */
     public function listHome()
     {
-        return $req = $this->dbConnect->query('SELECT * FROM superadmin');
+        return $this->dbConnect->query('SELECT * FROM superadmin');
     }
 }

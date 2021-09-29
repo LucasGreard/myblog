@@ -1,0 +1,2 @@
+GitHub : https://github.com/LucasGreard/myblog
+Codacy : We need to connect https://app.codacy.com/gh/LucasGreard/myblog/

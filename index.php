@@ -9,6 +9,8 @@ use Models\PostManager;
 use Models\SuperglobalManager;
 use Models\UserManager;
 
+
+
 include(dirname(__FILE__) . '/vendor/autoload.php');
 include(dirname(__FILE__) . '/controllers/frontend.php');
 
@@ -30,7 +32,7 @@ switch ($actionUrl):
 
         // START : USERS
     case "userConnect":
-        userConnect($userManager); //Display Connexion_Page
+        userConnect(); //Display Connexion_Page
         break;
     case 'userLogOn':
         userLogOn($userManager); //Display Coordinate_User_Page

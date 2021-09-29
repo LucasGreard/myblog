@@ -28,7 +28,7 @@ class UserLogOnView extends _DefaultView
     }
 
 
-    public static function render($sessionError, $post_Id = null, $postManager = null, $homeManager = null): void
+    public static function render($sessionError = null, $post_Id = null, $postManager = null, $homeManager = null): void
     {
         $obj = new self($sessionError);
         print_r($obj->rendering);

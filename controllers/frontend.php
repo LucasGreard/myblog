@@ -1,7 +1,10 @@
 <?php
 //INCLUDE FILES 
-include_once(dirname(__FILE__) . '/../models\PostManager.php');
-include_once(dirname(__FILE__) . '/../models\CommentManager.php');
+//include_once(dirname(__FILE__) . '/../models\PostManager.php');
+use Models\PostManager;
+use Models\CommentManager;
+
+//include_once(dirname(__FILE__) . '/../models\CommentManager.php');
 include_once(dirname(__FILE__) . '/../models\UserManager.php');
 
 include_once(dirname(__FILE__) . '/../views/_defaultView.php');
@@ -29,7 +32,7 @@ function displayHome($homeManager) //Display Home_Page
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //START : Fonction pour les posts
-function listPosts($postManager) // Display Posts_Page
+function listPosts(PostManager $postManager) // Display Posts_Page
 {
     PostsListView::render($postManager);
 }
@@ -39,7 +42,7 @@ function listPosts($postManager) // Display Posts_Page
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //START : Fonction pour les commentaires
-function listPost($postManager, $commentManager, $post_Id) // Display Post_Page with Comments
+function listPost(PostManager $postManager, CommentManager $commentManager, int $post_Id) // Display Post_Page with Comments
 {
     PostWithCommentView::render($postManager, $commentManager, $post_Id);
 }
@@ -65,13 +68,13 @@ function userComments($commentManager, $sessionError = null) // Display Comment_
 //START : Fonction pour les utilisateurs
 function userConnect() // Display Login_Page
 {
-    UserLogOnView::render($sessionError = null);
+    UserLogOnView::render();
 }
 
 function userLogOn($userManager) // Validates the user's connection
 {
     $userManager->signOn();
-    UserLogOnView::render($sessionError = null);
+    UserLogOnView::render();
 }
 
 function viewUserSignUp($userManager) // Display Sign_Up_Page

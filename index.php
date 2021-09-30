@@ -10,7 +10,6 @@ use Models\SuperglobalManager;
 use Models\UserManager;
 
 
-
 include(dirname(__FILE__) . '/vendor/autoload.php');
 include(dirname(__FILE__) . '/controllers/frontend.php');
 

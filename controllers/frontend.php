@@ -94,7 +94,13 @@ function userLogOut($userManager) // Disconnect user
     _DefaultView::render($userManager);
 }
 
-function modifyCoorUser($userManager) // Edit user details
+/**
+ * Edit user details
+ * 
+ * @param object $userManager UserManager
+ * @return void
+ */
+function modifyCoorUser($userManager)
 {
     $sessionError = $userManager->modifyCoorUser();
     UserLogOnView::render($sessionError);
@@ -116,11 +122,10 @@ function messageSend($contactManager, $sessionError) // Send message (Contact_Pa
     $mailUserSend = filter_input(INPUT_POST, 'mailUserSend', FILTER_SANITIZE_STRING);
     $messageUserSend = filter_input(INPUT_POST, 'messageUserSend', FILTER_SANITIZE_STRING);
     $testSendMessage = $contactManager->sendMessage($mailUserSend, $messageUserSend);
-    if ($testSendMessage == true) :
-        $sessionError = $sessionError->sessionError(17);
-    else :
-        $sessionError = $sessionError->sessionError(18);
-    endif;
+
+    $sessionError = $testSendMessage ?
+        $sessionError->sessionError(17) : $sessionError->sessionError(18);
+
     ContactMeView::render($contactManager, $sessionError);
 }
 //END : Me contacter
@@ -153,12 +158,11 @@ function managePostAdmin($postManager, $sessionError) // Delete - Edit - Add a P
 
 function modifyPostAdmin($postManager, $commentManager, $sessionError) // Validate modify Post by an Admin
 {
-
     $post_Id = filter_input(INPUT_POST, 'idPostAdmin', FILTER_SANITIZE_NUMBER_INT);
     $userState = SuperglobalManager::getSession('userState');
-    if ($userState === "Admin") :
+    if ($userState === "Admin")
         $sessionError = $postManager->modifyUserPost($sessionError);
-    endif;
+
     PostWithCommentView::render($postManager, $commentManager, $post_Id,  $sessionError);
 }
 

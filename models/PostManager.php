@@ -17,9 +17,11 @@ class PostManager extends Dbconnect
      * @throws exception
      */
 
-    //Affiche les posts de l'utilisateur
-
-    public function listPosts() //Affiche tous les posts validées
+    /**
+    * Display Posts_Page
+    * @return sqlrequest
+    */
+    public function listPosts()
     {
         $req = '
             SELECT * 
@@ -30,29 +32,7 @@ class PostManager extends Dbconnect
         $db = $this->dbConnect();
         return $db->query($req);
     }
-
-    public function listUserPosts() //Affiche la liste des posts d'un utilisateur
-    {
-        $homeManager = new HomeManager();
-        $sessionVerifConnexion = SuperglobalManager::getSession('verifConnexion');
-        $idUser = SuperglobalManager::getSession('idUser');
-        if (isset($sessionVerifConnexion)) :
-
-            $req = $this->dbConnect->prepare('
-            SELECT *
-            FROM post 
-            WHERE user_Id = :id
-            ');
-            $req->execute(
-                [
-                    "id" => $idUser
-                ]
-            );
-            return $req;
-        endif;
-        displayHome($homeManager);
-    }
-
+    
     public function addAdminPost($sessionError)
     {
         $postHeading = filter_input(INPUT_POST, 'addHeadingPost', FILTER_SANITIZE_STRING);

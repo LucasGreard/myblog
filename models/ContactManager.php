@@ -16,24 +16,32 @@ class ContactManager extends Dbconnect
     const TO =  "monprojet5.oc@gmail.com";
 
     /**
-     * @throws exception
-     */
+    * @throws exception
+    * $mail->isSMTP();                  Set mailer to use SMTP
+    * $mail->Host                       Specify main and backup SMTP servers
+    * $mail->SMTPAuth                   Enable SMTP authentication
+    * $mail->Username                   SMTP username
+    * $mail->Password                   SMTP password
+    * $mail->Port                       TCP port to connect to
+    * $mail->addAddress();              Name is optional
+    * $mail->isHTML();                  Set email format to HTML
+    */
     function sendMessage($mailUserSend, $messageUserSend)
     {
         try {
             $mail = new PHPMailer;
-            $mail->isSMTP();                                        // Set mailer to use SMTP
-            $mail->Host = 'smtp.gmail.com';                         // Specify main and backup SMTP servers
-            $mail->SMTPAuth = true;                                 // Enable SMTP authentication
-            $mail->Username = self::TO;                             // SMTP username
-            $mail->Password = 'monProjet5';                         // SMTP password
-            $mail->Port = 587;                                      // TCP port to connect to
+            $mail->isSMTP();                                        
+            $mail->Host = 'smtp.gmail.com';                         
+            $mail->SMTPAuth = true;                                 
+            $mail->Username = self::TO;                             
+            $mail->Password = 'monProjet5';                         
+            $mail->Port = 587;                                     
 
 
             $mail->setFrom($mailUserSend, 'Mailer');
-            $mail->addAddress(trim(self::TO));     // Name is optional
+            $mail->addAddress(trim(self::TO));     
             $mail->addReplyTo($mailUserSend, 'Mailer');
-            $mail->isHTML(true);                                    // Set email format to HTML
+            $mail->isHTML(true);                                   
             $mail->Subject = 'Mail send from lucasgreard.fr/contact';
             $mail->Body = $messageUserSend;
 

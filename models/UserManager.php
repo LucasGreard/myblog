@@ -16,13 +16,11 @@ class UserManager extends Dbconnect
     /**
      * @throws exception
      */
-    private function passwordHash($userPwd) //Renvoi le mdp haché
+    private function passwordHash($userPwd)
     {
         return password_hash($userPwd, CRYPT_BLOWFISH);
     }
 
-
-    //Récupérer tous les utilisateurs
     private function ifUserExist($userPhone, $userMail)
     {
         $req = $this->dbConnect->prepare('
@@ -39,7 +37,7 @@ class UserManager extends Dbconnect
         );
         return $req->fetchColumn();
     }
-    // Connexion d'un user
+
     public function signOn()
     {
         if (!isset($userInfo)) :
@@ -62,9 +60,6 @@ class UserManager extends Dbconnect
                 $userPwdHash = $req->fetch();
 
                 if (password_verify($userPwd, $userPwdHash['user_Password'])) :
-
-
-                    //On récupére les infos de l'utilisateur
                     $req = $this->dbConnect->prepare('
                         SELECT * 
                         FROM user 
@@ -95,7 +90,6 @@ class UserManager extends Dbconnect
         endif;
     }
 
-    // Inscription d'un user
     public function UserSignUp($homeManager, $sessionError)
     {
         $userLastName = filter_input(INPUT_POST, 'userLastName', FILTER_SANITIZE_STRING);
@@ -138,13 +132,12 @@ class UserManager extends Dbconnect
         endif;
     }
 
-    //Suppression de la session User
     public function UserLogOut()
     {
         session_destroy();
         header("Location: index.php");
     }
-    //Modification des coordonnées de l'utilisateur
+
     public function modifyCoorUser()
     {
 
@@ -181,7 +174,7 @@ class UserManager extends Dbconnect
 
         endif;
     }
-    //Affiche les USERS via l'ADMIN
+
     public function listUserManage($homeManager)
     {
 
@@ -200,7 +193,7 @@ class UserManager extends Dbconnect
             displayHome($homeManager);
         endif;
     }
-    //Détruit un USER
+
     public function deleteUser()
     {
         $sessionError = new SuperglobalManager();

@@ -49,9 +49,9 @@ On the administration part, I have to make sure that only people with “adminis
 
 ## Installation
 
-Use PHP (version 7.3.5).
-Use MySql (version 5.7.26)
-Use Apache (version 2.4.39)
+Use PHP (version 7.4.9).
+Use MySql (version 5.7.31)
+Use Apache (version 2.4.46)
 Use Wamp (like me)
 
 ```shell

@@ -27,7 +27,7 @@ class _DefaultView
 
     public function getHeader()
     {
-        $sessionTest = new SuperglobalManager(); //Initialize session
+        $sessionTest = new SuperglobalManager();
         $header = '
             <!DOCTYPE html>
             <html lang="en">
@@ -116,7 +116,7 @@ class _DefaultView
 
     public function getFooter()
     {
-        $sessionTest = new SuperglobalManager(); //Initialize session
+        $sessionTest = new SuperglobalManager(); 
         $footer = '
         <!-- Footer-->
         <footer class="py-5 bg-dark">

@@ -3,10 +3,10 @@
 namespace Models;
 
 use Exception;
+use Models\SuperglobalManager;
 
 class UserManager extends Dbconnect
 {
-    private $userPwd;
     private $dbConnect;
 
     public function __construct()
@@ -16,13 +16,11 @@ class UserManager extends Dbconnect
     /**
      * @throws exception
      */
-    private function passwordHash($userPwd) //Renvoi le mdp haché
+    private function passwordHash($userPwd)
     {
-        return $userPwdHash = password_hash($userPwd, CRYPT_BLOWFISH);
+        return password_hash($userPwd, CRYPT_BLOWFISH);
     }
 
-
-    //Récupérer tous les utilisateurs
     private function ifUserExist($userPhone, $userMail)
     {
         $req = $this->dbConnect->prepare('
@@ -39,19 +37,18 @@ class UserManager extends Dbconnect
         );
         return $req->fetchColumn();
     }
-    // Connexion d'un user
+
     public function signOn()
     {
         if (!isset($userInfo)) :
             //On récupére les données du formulaire de connexion
-            if (isset($_POST['userMail']) && isset($_POST['userPwd'])) :
-                $userMail = htmlentities($_POST['userMail']);
-                $userPwd = htmlentities($_POST['userPwd']);
-
+            $userMail = filter_input(INPUT_POST, 'userMail', FILTER_SANITIZE_EMAIL);
+            $userPwd = filter_input(INPUT_POST, 'userPwd', FILTER_SANITIZE_STRING);
+            if (isset($userMail) && isset($userPwd)) :
                 $req = $this->dbConnect->prepare('
                         SELECT user_Password 
                         FROM user 
-                        WHERE user_Mail=:user_Mail 
+                        WHERE user_Mail=:user_Mail
                         
                     ');
                 $req->execute(
@@ -63,13 +60,10 @@ class UserManager extends Dbconnect
                 $userPwdHash = $req->fetch();
 
                 if (password_verify($userPwd, $userPwdHash['user_Password'])) :
-
-
-                    //On récupére les infos de l'utilisateur
                     $req = $this->dbConnect->prepare('
                         SELECT * 
                         FROM user 
-                        WHERE user_Mail=:user_Mail       
+                        WHERE user_Mail=:user_Mail      
                     ');
                     $req->execute(
                         [
@@ -78,40 +72,40 @@ class UserManager extends Dbconnect
                     );
                     //On met les données dans $_SESSION
                     if ($userInfo = $req->fetch()) :
-                        $_SESSION['idUser'] = $userInfo['id'];
-                        $_SESSION['userLastName'] = $userInfo['user_Lastname'];
-                        $_SESSION['userFirstName'] = $userInfo['user_Firstname'];
-                        $_SESSION['userPhone'] = $userInfo['user_Phone'];
-                        $_SESSION['userMail'] = $userInfo['user_Mail'];
-                        $_SESSION['VerifConnection'] = 1;
-                        $_SESSION['userState'] = $userInfo['user_State'];
+                        SuperglobalManager::putSession('idUser', $userInfo['id']);
+                        SuperglobalManager::putSession('userLastName', $userInfo['user_Lastname']);
+                        SuperglobalManager::putSession('userFirstName', $userInfo['user_Firstname']);
+                        SuperglobalManager::putSession('userPhone', $userInfo['user_Phone']);
+                        SuperglobalManager::putSession('userMail', $userInfo['user_Mail']);
+                        SuperglobalManager::putSession('verifConnexion', "1");
+                        SuperglobalManager::putSession('userState', $userInfo['user_State']);
                         return $userInfo;
                     else :
-                        $_SESSION['connexionLose'] = "USERNAME OR PASSWORD INCORRECT";
+                        SuperglobalManager::putSession('connexionLose', "USERNAME OR PASSWORD INCORRECT");
                     endif;
                 else :
-                    $_SESSION['connexionLose'] = "USERNAME OR PASSWORD INCORRECT";
+                    SuperglobalManager::putSession('connexionLose', "USERNAME OR PASSWORD INCORRECT");
                 endif;
             endif;
         endif;
     }
 
-    // Inscription d'un user
-    public function UserSignUp($homeManager)
+    public function UserSignUp($homeManager, $sessionError)
     {
-        if (isset($_POST['userLastName']) && isset($_POST['userFirstName']) && isset($_POST['userPhone']) && isset($_POST['userMail'])) :
+        $userLastName = filter_input(INPUT_POST, 'userLastName', FILTER_SANITIZE_STRING);
+        $userFirstName = filter_input(INPUT_POST, 'userFirstName', FILTER_SANITIZE_STRING);
+        $userPhone = filter_input(INPUT_POST, 'userPhone', FILTER_SANITIZE_STRING);
+        $userMail = filter_input(INPUT_POST, 'userMail', FILTER_SANITIZE_EMAIL);
 
-            $userLastName = htmlentities($_POST['userLastName']);
-            $userFirstName = htmlentities($_POST['userFirstName']);
-            $userPhone = htmlentities($_POST['userPhone']);
-            $userMail = htmlentities($_POST['userMail']);
-            $userPwd = htmlentities($_POST['userPwd']);
-            $userPwd2 = htmlentities($_POST['userPwd2']);
+        if (isset($userLastName) && isset($userFirstName) && isset($userPhone) && isset($userMail)) :
+
+            $userPwd = filter_input(INPUT_POST, 'userPwd', FILTER_SANITIZE_STRING);
+            $userPwd2 = filter_input(INPUT_POST, 'userPwd2', FILTER_SANITIZE_STRING);
 
             if (isset($userPwd) && isset($userPwd2) && ($userPwd === $userPwd2) && $userPwd != "" && $userPwd2 != "") : //Si les deux mots de passes sont identiques et existent
                 $req = $this->ifUserExist($userPhone, $userMail);
                 if ($req === '1') :
-                    return $_SESSION['userExist'] = 'User already exists !';
+                    return $sessionError->sessionError(16);
                 elseif ($req === '0') :
                     $userPwd = $this->passwordHash($userPwd);
                     $req = $this->dbConnect->prepare('
@@ -128,82 +122,69 @@ class UserManager extends Dbconnect
                             'user_State' => "Guest"
                         ]
                     );
-                    return $_SESSION['userExist'] = 'You have registered successfully. <a href="index.php?action=userConnect">Log in now !</a> !';
+                    return $sessionError->sessionError(14);
                 endif;
             else :
-                return $_SESSION['userExist'] = 'Passwords are not identical ! Retry !';
+                return $sessionError->sessionError(15);
             endif;
         else :
             displayHome($homeManager);
         endif;
     }
 
-    //Suppression de la session User
     public function UserLogOut()
     {
         session_destroy();
         header("Location: index.php");
     }
-    //Modification des coordonnées de l'utilisateur
-    public function modifyCoorUser($userManager)
+
+    public function modifyCoorUser()
     {
-        if (isset($_SESSION['idUser'])) :
-            $userLastName = htmlentities($_POST['userLastName']);
-            $userFirstName =  htmlentities($_POST['userFirstName']);
-            $userPhone = htmlentities($_POST['userPhone']);
-            $userMail = htmlentities($_POST['userMail']);
-            $userPwd = htmlentities($_POST['userPwd']);
-            $userPwdModify1 = htmlentities($_POST['userPwdModif1']);
-            $userPwdModify2 = htmlentities($_POST['userPwdModif2']);
 
-            if ($userPwdModify1 === $userPwdModify2) :
-                $req = $this->dbConnect->prepare('
-                        SELECT user_Password 
-                        FROM user 
-                        WHERE id=:id 
-                        
-                    ');
-                $req->execute(
-                    [
-                        'id' => $_SESSION['idUser']
-                    ]
-                );
-                $userPwdHash = $req->fetch();
+        $idUser = SuperglobalManager::getSession('idUser');
+        if (isset($idUser)) :
+            $userLastName = filter_input(INPUT_POST, 'userLastName', FILTER_SANITIZE_STRING);
+            $userFirstName = filter_input(INPUT_POST, 'userFirstName', FILTER_SANITIZE_STRING);
+            $userPhone = filter_input(INPUT_POST, 'userPhone', FILTER_SANITIZE_STRING);
+            $userMail = filter_input(INPUT_POST, 'userMail', FILTER_SANITIZE_EMAIL);
 
-                if (password_verify($userPwd, $userPwdHash['user_Password'])) :
-                    $req = $this->dbConnect->prepare('
+            $req = $this->dbConnect->prepare('
                     UPDATE user
-                    SET userLastname = :userLastname, user_Firstname = :user_Firstname, user_Mail = :user_Mail, user_Phone = :user_Phone
-                    WHERE id = :id
+                    SET user_Lastname = ?, user_Firstname = ?, user_Mail = ?, user_Phone = ?
+                    WHERE id = ?
                 ');
-                    $req->execute(
-                        [
-                            "userLastname" => $userLastName,
-                            "user_Firstname" => $userFirstName,
-                            "user_Mail" => $userPhone,
-                            "user_Phone" => $userMail,
-                            "id" => $_SESSION['idUser']
-                        ]
-                    );
-                    return $req;
-                else :
-                    $_SESSION['modifCoordUserValide'] = "Password is not good";
-                endif;
-            else :
-                $_SESSION['modifCoordUserValide'] = "The new passwords are not the same";
-            endif;
+
+            $req->execute(
+                [
+                    $userLastName,
+                    $userFirstName,
+                    $userMail,
+                    $userPhone,
+                    $idUser
+                ]
+            );
+            SuperglobalManager::putSession('userLastName', $userLastName);
+            SuperglobalManager::putSession('userFirstName', $userFirstName);
+            SuperglobalManager::putSession('userPhone', $userPhone);
+            SuperglobalManager::putSession('userMail', $userMail);
+            $sessionError = new SuperglobalManager();
+            return $sessionError->sessionError(9);
         else :
-            userConnect($userManager);
+            userConnect();
+
         endif;
     }
-    //Affiche les USERS via l'ADMIN
+
     public function listUserManage($homeManager)
     {
-        if (isset($_SESSION['VerifConnection']) && $_SESSION['userState'] == "Admin") :
+
+        $sessionVerifConnexion = SuperglobalManager::getSession('verifConnexion');
+        $userState = SuperglobalManager::getSession('userState');
+        if (isset($sessionVerifConnexion) && $userState == "Admin") :
             $req = '
             SELECT *
             FROM user 
-            WHERE user_State = "Guest" OR user_State ="Moderator"
+            WHERE user_State NOT LIKE "Admin"
             ORDER BY user_Lastname ASC
             ';
             $db = $this->dbConnect();
@@ -212,10 +193,11 @@ class UserManager extends Dbconnect
             displayHome($homeManager);
         endif;
     }
-    //Détruit un USER
+
     public function deleteUser()
     {
-        $idUser = htmlentities($_POST['idUser']);
+        $sessionError = new SuperglobalManager();
+        $idUser = filter_input(INPUT_POST, 'idUser', FILTER_SANITIZE_NUMBER_INT);
         $req = $this->dbConnect->prepare('
             DELETE FROM user
             WHERE id = :id
@@ -225,7 +207,22 @@ class UserManager extends Dbconnect
                 'id' => $idUser
             ]
         );
-        $_SESSION['userManage'] = 'User was delete ! </a>';
-        header("Location: index.php?action=listUserManage");
+        $sessionError->sessionError(13);
+    }
+    public function acceptUser()
+    {
+        $sessionError = new SuperglobalManager();
+        $idUser = filter_input(INPUT_POST, 'idUser', FILTER_SANITIZE_NUMBER_INT);
+        $req = $this->dbConnect->prepare('
+            UPDATE user
+            SET user_State = "User"
+            WHERE id = :id
+        ');
+        $req->execute(
+            [
+                'id' => $idUser
+            ]
+        );
+        $sessionError->sessionError(12);
     }
 }

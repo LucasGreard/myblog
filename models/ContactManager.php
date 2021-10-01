@@ -3,55 +3,51 @@
 namespace Models;
 
 use Exception;
+use Models\SuperglobalManager;
+use PHPMailer\PHPMailer\PHPMailer;
+
+require 'PHPMailer-master/src/Exception.php';
+require 'PHPMailer-master/src/PHPMailer.php';
+require 'PHPMailer-master/src/SMTP.php';
 
 class ContactManager extends Dbconnect
 {
-    private $dbConnect;
-    const TO =  "lucas.greard07@gmail.com";
 
-    public function __construct()
-    {
-        $this->dbConnect = $this->dbConnect();
-    }
+    const TO =  "monprojet5.oc@gmail.com";
+
     /**
-     * @throws exception
-     */
-    public function __setTo()
+    * @throws exception
+    * $mail->isSMTP();                  Set mailer to use SMTP
+    * $mail->Host                       Specify main and backup SMTP servers
+    * $mail->SMTPAuth                   Enable SMTP authentication
+    * $mail->Username                   SMTP username
+    * $mail->Password                   SMTP password
+    * $mail->Port                       TCP port to connect to
+    * $mail->addAddress();              Name is optional
+    * $mail->isHTML();                  Set email format to HTML
+    */
+    function sendMessage($mailUserSend, $messageUserSend)
     {
-        return $this->to = "lucas.greard07@gmail.com";
-    }
+        try {
+            $mail = new PHPMailer;
+            $mail->isSMTP();                                        
+            $mail->Host = 'smtp.gmail.com';                         
+            $mail->SMTPAuth = true;                                 
+            $mail->Username = self::TO;                             
+            $mail->Password = 'monProjet5';                         
+            $mail->Port = 587;                                     
 
-    public function setTo($to) : void {
-        $this->to = $to;
-    }
 
-    public function getTo() : string {
-        // aller cherche l'email du user avec id 1 ou droit admin
-        return $this->to;
-    }
+            $mail->setFrom($mailUserSend, 'Mailer');
+            $mail->addAddress(trim(self::TO));     
+            $mail->addReplyTo($mailUserSend, 'Mailer');
+            $mail->isHTML(true);                                   
+            $mail->Subject = 'Mail send from lucasgreard.fr/contact';
+            $mail->Body = $messageUserSend;
 
-    function sendMessage()
-    {
-        if (isset($_POST['emailContact']) && isset($_POST['messageContact'])) :
-            $emailContact = htmlentities($_POST['emailContact']);
-            $messageContact = htmlentities($_POST['messageContact']);
-
-            $messageSend = '
-                <html>
-                    <head>
-                        <title>Message de la part de ' . $emailContact;
-            $messageSend .= '
-                    <body>
-                        <p> Email de contact : ' . $emailContact . '</p>
-                        <p>Message : ' . $messageContact . '</p>
-                    </body>
-                </html>
-                        ';
-            // Pour envoyer un mail HTML, l'en-tête Content-type doit être défini
-            $headers[] = 'MIME-Version: 1.0';
-            $headers[] = 'Content-type: text/html; charset=iso-8859-1';
-
-            mail($this->TO, $emailContact, $messageSend, $headers);
-        endif;
+            return $mail->send();
+        } catch (\Error | \Exception $e) {
+            return false;
+        }
     }
 }

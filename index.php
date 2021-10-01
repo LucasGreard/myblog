@@ -6,116 +6,120 @@ use Models\ContactManager;
 use Models\Dbconnect;
 use Models\HomeManager;
 use Models\PostManager;
+use Models\SuperglobalManager;
 use Models\UserManager;
 
 
+include(dirname(__FILE__) . '/vendor/autoload.php');
+include(dirname(__FILE__) . '/controllers/frontend.php');
 
-require __DIR__ . "/vendor/autoload.php";
-require('controllers/frontend.php');
-$db = Dbconnect::dbConnect(); //Initialise la connexion
-$postManager = new PostManager(); //Initialise le PostManager
-$commentManager = new CommentManager(); //Initialise le CommentManager
-$userManager = new UserManager(); //Initialise le UserManager
-$homeManager = new HomeManager(); //Initialise le HomeManager
-$contactManager = new ContactManager(); //Initialise le contactManager
+// Initialize all managers
+$db = Dbconnect::dbConnect();
+$postManager = new PostManager();
+$commentManager = new CommentManager();
+$userManager = new UserManager();
+$homeManager = new HomeManager();
+$contactManager = new ContactManager();
+$sessionError = new SuperglobalManager();
 
-try {
-    if (!isset($_GET['action'])) {
-        $_GET['action'] = "";
-    }
-    switch ($_GET['action']):
-        case "userConnect":
-            userConnect($userManager); //Va vers la page de connexion
-            break;
+$actionUrl = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_URL);
 
-        case "listPost":
-            listPost($postManager); //affiche les posts
-            break;
-
-        case 'listComment':
-            listComment($commentManager); // Affiche les commentaires liés au post choisi
-            break;
-
-        case 'userLogOn':
-            userLogOn($userManager); //Va vers la page où l'utilisateur est connecté
-            break;
-
-        case 'viewUserSignUp':
-            viewUserSignUp($userManager); //Va vers la page d'inscription
-            break;
-
-        case 'userSignUp':
-            userSignUp($userManager); //Inscrit un nouvel utilisateur
-            break;
-
-        case 'deleteSession':
-            userLogOut($userManager); //Déconnecte un utilisateur
-            break;
-
-            // case 'listUserPosts':  // A ajouter si les USERS peuvent ajouter un post
-            //     listUserPosts($postManager); //Affiche les posts d'un utilisateur
-            //     break;
-
-        case 'addUserPost':
-            addUserPost($postManager); //Ajoute d'un post par l'utilisateur
-            break;
-
-        case 'deleteUserPost':
-            deleteUserPost($postManager); //Suppression d'un post pour un utilisateur
-            break;
-
-        case 'modifyUserPost':
-            modifyUserPost($postManager); //Modification d'un post par un utilisateur
-            break;
-
-        case 'listPostValidation':
-            listPostValidation($postManager); //Liste les posts à valider
-            break;
-        case 'validUserPost':
-            valideUserPost($postManager); //Valide un post
-            break;
-
-        case 'addUserComment':
-            addUserComment($commentManager); //Ajoute un commentaire
-            break;
-
-        case 'modifyCoorUser':
-            modifyCoorUser($userManager); //Modifie les coordonnées d'un utilisateur
-            break;
-
-        case 'listCommentValidation':
-            listCommentValidation($commentManager); //Liste les commentaires en attente de validation
-            break;
-
-        case 'validCommentUser':
-            valideCommentUser($commentManager); //Valide un commentaire
-            break;
-
-        case 'deleteUserComment':
-            deleteUserComment($commentManager); //Supprime un commentaire non valide
-            break;
-
-        case 'listUserManage':
-            listUserManage($userManager); //Liste les utilisateurs 
-            break;
-
-        case 'deleteUser':
-            deleteUser($userManager); //Supprime un utilisateur
-            break;
-
-        case 'contactMe':
-            contactMe($contactManager); //Affiche la page de contact
-            break;
-
-        case 'messageSend':
-            messageSend($contactManager); //Envoi un message
-            break;
-        case 'userComments':
-            userComments($commentManager); //Affiche une page avec tous les commentaires d'un utilisateur
-        default:
-            displayHome($homeManager); //Affiche l'accueil
-    endswitch;
-} catch (Exception $e) {
-    echo 'Erreur : ' . $e->getMessage();
+if (!isset($actionUrl)) {
+    $actionUrl = "";
 }
-Dbconnect::dbCloseConnection($db); //Supprime la connexion
+switch ($actionUrl):
+
+        // START : USERS
+    case "userConnect":
+        userConnect(); //Display Connexion_Page
+        break;
+    case 'userLogOn':
+        userLogOn($userManager); //Display Coordinate_User_Page
+        break;
+
+    case 'viewUserSignUp':
+        viewUserSignUp($userManager); // Display Sign_Up_Page
+        break;
+
+    case 'userSignUp':
+        userSignUp($userManager, $sessionError, $homeManager); // Valide Sign_Up
+        break;
+
+    case 'deleteSession':
+        userLogOut($userManager); // Delete User
+        break;
+
+    case 'userComments':
+        userComments($commentManager, $sessionError = null); // Display Comment_User_Page
+        break;
+
+    case 'addUserComment':
+        addUserComment($postManager, $commentManager); // Add a comment by user
+        break;
+
+    case 'modifyCoorUser':
+        modifyCoorUser($userManager); // Edit Coodinate User
+        break;
+        //END : USERS
+
+        // START : Display Post(s) and Comment(s)
+    case "listPosts":
+        listPosts($postManager); // Display all Posts
+        break;
+
+    case 'listPost':
+        $post_Id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+        listPost($postManager, $commentManager, $post_Id); // Display a Post with comment(s)
+        break;
+        // END : Display Post(s) and Comment(s)
+
+
+
+        // START : CONTACT
+    case 'contactMe':
+        contactMe($contactManager); // Display Contact_Page
+        break;
+
+    case 'messageSend':
+        messageSend($contactManager, $sessionError); // Send message
+        break;
+        //END : CONTACT
+
+
+        //START : ADMIN
+    case 'listCommentValidation':
+        listCommentValidation($commentManager); // Display Comment_Validate_Page 
+        break;
+
+    case 'validAndDeleteCommentUser':
+        valideAndDeleteCommentUser($postManager, $commentManager, $sessionError); // Valid or delete Comment User by an Admin
+        break;
+
+    case 'listUserManage':
+        listUserManage($userManager); // Display Manage_User_Page
+        break;
+
+    case 'ManageUser':
+        ManageUser($userManager, $sessionError, $homeManager); // Delete an User
+        break;
+
+    case 'managePostAdmin': // Manage an User
+        managePostAdmin($postManager, $sessionError);
+        break;
+
+    case 'modifyPostAdmin': // Edit Post by an Admin
+        modifyPostAdmin($postManager, $commentManager, $sessionError);
+        break;
+
+    case 'addPostAdmin': // Add Post by an Admin
+        addAdminPost($postManager, $sessionError);
+        break;
+        //END ADMIN
+
+    default:
+        displayHome($homeManager); // Display Home_Page
+        break;
+
+endswitch;
+
+Dbconnect::dbCloseConnection($db); // CClloosse connection

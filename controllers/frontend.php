@@ -1,189 +1,343 @@
 <?php
-//REQUIRE_ONCE 
-require_once('Models/PostManager.php');
-require_once('Models/CommentManager.php');
-require_once('Models/UserManager.php');
-require_once('views/postListView.php');
-require_once('views/userSignUpView.php');
-require_once('views/commentListView.php');
-// require_once('views/userListPostsView.php'); A ajouter si les USERS peuvent ajouter un post
-require_once('views/userModifyPostView.php');
-require_once('views/postListValidationView.php');
-require_once('views/userLogOnView.php');
-require_once('views/commentListValidationView.php');
-require_once('views/userListManageView.php');
-require_once('views/contactMeView.php');
-require_once('views/userCommentsView.php');
-
-//USE Models
-use Models\HomeManager;
+//INCLUDE FILES 
 use Models\PostManager;
 use Models\CommentManager;
-use Models\UserManager;
-use Models\ContactManager;
 
+include_once(dirname(__FILE__) . '/../models\UserManager.php');
+include_once(dirname(__FILE__) . '/../views/_defaultView.php');
+include_once(dirname(__FILE__) . '/../views/postsListView.php');
+include_once(dirname(__FILE__) . '/../views/userSignUpView.php');
+include_once(dirname(__FILE__) . '/../views/postWithCommentView.php');
+include_once(dirname(__FILE__) . '/../views/userLogOnView.php');
+include_once(dirname(__FILE__) . '/../views/commentListValidationView.php');
+include_once(dirname(__FILE__) . '/../views/userListManageView.php');
+include_once(dirname(__FILE__) . '/../views/contactMeView.php');
+include_once(dirname(__FILE__) . '/../views/userCommentsView.php');
+include_once(dirname(__FILE__) . '/../views/adminManagePostView.php');
+include_once(dirname(__FILE__) . '/../views/modifyPostAdminView.php');
+include_once(dirname(__FILE__) . '/../views/addPostView.php');
 
+use Models\SuperglobalManager;
 //START : Fonction principale
 
-function displayHome(HomeManager $homeManager) //Accède à la page Accueil
+/**
+ * Display Home_Page
+ * @param object $homeManager HomeManager
+ * @return void
+ */
+function displayHome($homeManager) 
 {
     _DefaultView::render($homeManager);
 }
+
 //END : Fonction principale
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //START : Fonction pour les posts
 
-function listPost(PostManager $postManager) // Affiche les posts
+/**
+ * Display Posts_Page
+ * @param object $postManager PostManager
+ * @return void
+ */
+function listPosts(PostManager $postManager) 
 {
-    PostListView::render($postManager);
-}
-
-// A ajouter si les USERS peuvent ajouter un post
-// function listUserPosts(PostManager $postManager) //Affichage des posts de l'utilisateur
-// {
-//     UserListPostsView::render($postManager);
-// }
-
-function addUserPost(PostManager $postManager) //Ajouter un post
-{
-    $postManager->addUserPost();
-    UserListPostsView::render($postManager);
-}
-
-function deleteUserPost(PostManager $postManager)
-{
-    $postManager->deleteUserPost();
-    UserListPostsView::render($postManager);
-}
-
-function modifyUserPost(PostManager $postManager)
-{
-
-    if (isset($_POST['postHeadingUserModify']) && isset($_POST['postContentUserModify'])) {
-        $postManager->modifyUserPost();
-    }
-    UserModifyPostView::render($postManager);
-}
-
-function listPostValidation(PostManager $postManager)
-{
-    PostListValidationView::render($postManager);
-}
-
-function valideUserPost(PostManager $postManager)
-{
-    if (isset($_POST['validPostUser'])) {
-        $postManager->valideUserPost();
-    } elseif (isset($_POST['deletePostUser'])) {
-        $postManager->deleteUserPost();
-    }
-    PostListValidationView::render($postManager);
+    PostsListView::render($postManager);
 }
 
 //END : Fonction pour les posts
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //START : Fonction pour les commentaires
-function listComment(CommentManager $commentManager) // Affiche les commentaires
+
+/**
+ * Display Post_Page with Comments
+ * @param object $postManager PostManager
+ * @param object $commentManager CommentManager
+ * @param int $post_Id
+ * @return void
+ */
+function listPost(PostManager $postManager, CommentManager $commentManager, int $post_Id) 
 {
-    $post_Id = $_GET['id'];
-    CommentListView::render($commentManager, $post_Id);
+    PostWithCommentView::render($postManager, $commentManager, $post_Id);
 }
-function addUserComment(CommentManager $commentManager)
+
+/**
+ * Add user comment
+ * @param object $postManager PostManager
+ * @param object $commentManager CommentManager
+ * @return void
+ */
+function addUserComment($postManager, $commentManager)
 {
-    $post_Id = $_GET['id'];
-    $commentManager->addUsercomment($post_Id);
-    CommentListView::render($commentManager, $post_Id);
+    $post_Id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+    $sessionError = $commentManager->addUsercomment($post_Id);
+    $postManager->listUniquePost($post_Id);
+    PostWithCommentView::render($postManager, $commentManager, $post_Id, $sessionError);
 }
-function listCommentValidation(CommentManager $commentManager)
+
+/**
+ * Display Comment_User_Page
+ * @param object $commentManager CommentManager
+ * @return void
+ */
+function userComments($commentManager, $sessionError = null)
 {
-    CommentListValidationView::render($commentManager);
+    userCommentsView::render($commentManager, $sessionError = null);
 }
-function valideCommentUser(CommentManager $commentManager)
-{
-    if (isset($_POST['validCommentUser'])) :
-        $commentManager->valideCommentUser();
-    elseif (isset($_POST['deleteCommentUser'])) :
-        $commentManager->deleteUserComment();
-    endif;
-    CommentListValidationView::render($commentManager);
-}
-function deleteUserComment(CommentManager $commentManager)
-{
-    $commentManager->deleteUserComment();
-    CommentListValidationView::render($commentManager);
-}
-function userComments(CommentManager $commentManager)
-{
-    userCommentsView::render($commentManager);
-}
+
 //END : Fonction pour les commentaires
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //START : Fonction pour les utilisateurs
-function userConnect(UserManager $userManager) // Accède à la page de connection
+
+/**
+ * Display Login_Page
+ * @return void
+ */
+function userConnect()
 {
-    UserLogOnView::render($userManager);
+    UserLogOnView::render();
 }
 
-function userLogOn(UserManager $userManager) //Page de validation de connection
+/**
+ * Validates the user's connection
+ * @param object $userManager UserManager
+ * @return void
+ */
+function userLogOn($userManager) 
 {
     $userManager->signOn();
-    UserLogOnView::render($userManager);
+    UserLogOnView::render();
 }
 
-function viewUserSignUp(UserManager $userManager) //Accès à la page d'inscription
+/**
+ * Display Sign_Up_Page
+ * @param object $userManager UserManager
+ * @return void
+ */
+function viewUserSignUp($userManager) 
 {
     UserSignUpView::render($userManager);
 }
 
-function userSignUp(UserManager $userManager) //Page de validation d'inscription
+/**
+ * Validates user's sign up
+ * @param object $userManager UserManager
+ * @param object $sessionError SuperGlobalManager
+ * @param object $homeManager HomeManager
+ * @return void
+ */
+function userSignUp($userManager, $sessionError, $homeManager)
 {
-    UserSignUpView::render($userManager);
-    $userManager->UserSignUp($userManager);
+    $sessionError = $userManager->UserSignUp($homeManager, $sessionError);
+    UserSignUpView::render($userManager, $sessionError);
 }
 
-function userLogOut(UserManager $userManager) //Déconnexion de l'utilisateur
+/**
+ * Disconnect user
+ * @param object $userManager UserManager
+ * @return void
+ */
+function userLogOut($userManager) 
 {
     $userManager->UserLogOut();
     _DefaultView::render($userManager);
 }
-function modifyCoorUser(UserManager $userManager)
-{
 
-    $userManager->modifyCoorUser($userManager);
-    UserLogOnView::render($userManager);
-}
-function listUserManage(UserManager $userManager)
+/**
+ * Edit user details
+ * @param object $userManager UserManager
+ * @return void
+ */
+function modifyCoorUser($userManager)
 {
-    UserListManageView::render($userManager);
+    $sessionError = $userManager->modifyCoorUser();
+    UserLogOnView::render($sessionError);
 }
-function deleteUser(UserManager $userManager)
-{
-    $userManager->deleteUser();
-    UserListManageView::render($userManager);
-}
+
 //END : Fonction pour les utilisateurs
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //START : Me contacter
-function contactMe(ContactManager $contactManager)
+
+/**
+ * Display Contact_Page
+ * @param object $contactManager ContactManager
+ * @return void
+ */
+function contactMe($contactManager)
 {
     ContactMeView::render($contactManager);
 }
-function messageSend(ContactManager $contactManager)
-{
 
-    ContactMeView::render($contactManager);
+/**
+ * Send message (Contact_Page)
+ * @param object $contactManager ContactManager
+ * @param object $sessionError SuperGlobalManager
+ * @return void
+ */
+function messageSend($contactManager, $sessionError)
+{
+    $mailUserSend = filter_input(INPUT_POST, 'mailUserSend', FILTER_SANITIZE_STRING);
+    $messageUserSend = filter_input(INPUT_POST, 'messageUserSend', FILTER_SANITIZE_STRING);
+    $testSendMessage = $contactManager->sendMessage($mailUserSend, $messageUserSend);
+
+    $sessionError = $testSendMessage ?
+        $sessionError->sessionError(17) : $sessionError->sessionError(18);
+
+    ContactMeView::render($contactManager, $sessionError);
 }
 
 //END : Me contacter
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Start : Fonction pour Admin
+
+/**
+ * Delete - Edit - Add a Post by an Admin
+ * @param object $postManager PostManager
+ * @param object $sessionError SuperGlobalManager
+ * @return void
+ */
+function managePostAdmin($postManager, $sessionError)
+{
+    $deleteAdminPost = filter_input(INPUT_POST, 'deleteAdminPost', FILTER_SANITIZE_NUMBER_INT);
+    $addPostAdmin = filter_input(INPUT_POST, 'addPostAdmin', FILTER_SANITIZE_NUMBER_INT);
+    $modifyAdminPost = filter_input(INPUT_POST, 'modifyAdminPost', FILTER_SANITIZE_NUMBER_INT);
+    if (isset($deleteAdminPost)) :
+        $sessionError = $postManager->deleteAdminPost($sessionError);
+        ManagePostAdminView::render($postManager, $sessionError);
+
+    elseif (isset($addPostAdmin)) :
+        AddPostAdminView::render($postManager);
+        unset($addPostAdmin);
+
+    elseif (isset($modifyAdminPost)) :
+        ModifyPostAdminView::render($postManager);
+        unset($modifyAdminPost);
+
+    else :
+        ManagePostAdminView::render($postManager, $sessionError = null);
+    endif;
+}
+
+/**
+ * Validate modify Post by an Admin
+ * @param object $postManager PostManager
+ * @param object $commentManager CommentManager
+ * @param object $sessionError SuperGlobalManager
+ * @return void
+ */
+function modifyPostAdmin($postManager, $commentManager, $sessionError)
+{
+    $post_Id = filter_input(INPUT_POST, 'idPostAdmin', FILTER_SANITIZE_NUMBER_INT);
+    $userState = SuperglobalManager::getSession('userState');
+    if ($userState === "Admin")
+        $sessionError = $postManager->modifyUserPost($sessionError);
+
+    PostWithCommentView::render($postManager, $commentManager, $post_Id,  $sessionError);
+}
+
+/**
+ * Add a Post by an Admin
+ * @param object $postManager PostManager
+ * @param object $sessionError SuperGlobalManager
+ * @return void
+ */
+function addAdminPost($postManager, $sessionError) 
+{
+    $sessionError = $postManager->addAdminPost($sessionError);
+    ManagePostAdminView::render($postManager, $sessionError);
+}
+
+/**
+ * Display comment to validate by Admin
+ * @param object $commentManager CommentManager
+ * @return void
+ */
+function listCommentValidation($commentManager)
+{
+    CommentListValidationView::render($commentManager);
+}
+
+/**
+ * Validate or delete comment by admin
+ * @param object $postManager PostManager
+ * @param object $commentManager CommentManager
+ * @param object $sessionError SuperGlobalManager
+ * @return void
+ */
+function valideAndDeleteCommentUser($postManager, $commentManager, $sessionError) // 
+{
+    $validCommentUser = filter_input(INPUT_POST, 'validCommentUser', FILTER_SANITIZE_NUMBER_INT);
+    $deleteCommentUser = filter_input(INPUT_POST, 'deleteCommentUser', FILTER_SANITIZE_NUMBER_INT);
+
+    $namePage = filter_input(INPUT_POST, 'namePage', FILTER_SANITIZE_STRING);
+
+    if (isset($validCommentUser)) :
+        $commentManager->valideCommentUser();
+        $sessionError = $sessionError->sessionError(11);
+    elseif (isset($deleteCommentUser)) :
+        $commentManager->deleteUserComment();
+        $sessionError = $sessionError->sessionError(3);
+    endif;
+
+    switch ($namePage):
+        case 'myComments':
+            userCommentsView::render($commentManager, $sessionError);
+            break;
+        case 'manageComments':
+            CommentListValidationView::render($commentManager, $sessionError);
+            break;
+        case 'manageCommentsDirectlyOnPost':
+            $post_Id = filter_input(INPUT_POST, 'idPostAdmin', FILTER_SANITIZE_NUMBER_INT);
+            PostWithCommentView::render($postManager, $commentManager, $post_Id, $sessionError);
+            break;
+    endswitch;
+}
+
+/**
+ * Display User_Manage_Page
+ * @param object $userManager UserManager
+ * @return void
+ */
+function listUserManage($userManager) 
+{
+    UserListManageView::render($userManager);
+}
+
+/**
+ * Delete or Accept Guest_User
+ * @param object $userManager UserManager
+ * @param object $homeManager HomeManager
+ * @param object $sessionError SuperGlobalManager
+ * @return void
+ */
+function ManageUser($userManager, $sessionError, $homeManager)
+{
+    $deleteUser = filter_input(INPUT_POST, 'deleteUser', FILTER_SANITIZE_NUMBER_INT);
+    $acceptUser = filter_input(INPUT_POST, 'acceptUser', FILTER_SANITIZE_NUMBER_INT);
+    if (isset($deleteUser)) :
+        $userManager->deleteUser();
+        $sessionError = $sessionError->sessionError(13);
+    elseif (isset($acceptUser)) :
+        $userManager->acceptUser();
+        $sessionError = $sessionError->sessionError(12);
+    endif;
+    UserListManageView::render($userManager, $sessionError, $homeManager);
+}
+//END : Fonction pour Admin
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

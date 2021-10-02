@@ -95,12 +95,34 @@ class ManagePostAdminView extends _DefaultView
                                         <form action="index.php?action=managePostAdmin" method="POST">
                                             <input name="idPostAdmin" type="hidden" value="' . $data['id'] . '">
                                             <button type="submit" class="btn btn-outline-success" name="modifyAdminPost">Modify</button>
-                                            <button type="submit" class="btn btn-outline-danger" name="deleteAdminPost">Delete</button>
                                         </form>
+                                        <button type="submit" class="btn btn-outline-danger" data-toggle="modal" data-target="#confirmDelete">Delete</button>
                                     </td>
                                 </tr>
                              
-
+                                <div class="modal" id="confirmDelete">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <!-- Modal Header -->
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Confirm delete Post ?</h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <!-- Modal body -->
+                                        <div class="modal-body">
+                                           /!\ If you delete the post you will not be able to recover it ! /!\
+                                        </div>
+                                        <!-- Modal footer -->
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Close</button>
+                                            <form action="index.php?action=managePostAdmin" method="POST">
+                                            <input name="idPostAdmin" type="hidden" value="' . $data['id'] . '">
+                                            <button type="submit" class="btn btn-danger" name="deleteAdminPost">Confirm delete</button>
+                                        </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         ';
 
         endwhile;

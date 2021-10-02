@@ -87,7 +87,7 @@ class ModifyPostAdminView extends _DefaultView
                     <div class="col-12  text-center p-2"> 
                             <div class="input-group-prepend text-center">
                                 Author
-                                <input name="authorPostModify" class="form-control" value="' . $data['post_Author'] . '" type="text">
+                                <input readonly="readonly" name="authorPostModify" class="form-control" value="' . $data['post_Author'] . '" type="text">
                             </div>
                     </div>
                     <div class="col-12  text-center p-2"> 

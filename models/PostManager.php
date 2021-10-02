@@ -123,18 +123,16 @@ class PostManager extends Dbconnect
         $idPostUser = filter_input(INPUT_POST, 'idPostAdmin', FILTER_SANITIZE_NUMBER_INT);
         $headingPostModify = filter_input(INPUT_POST, 'headingPostModify', FILTER_SANITIZE_STRING);
         $contentPostModify = filter_input(INPUT_POST, 'contentPostModify', FILTER_SANITIZE_STRING);
-        $authorPostModify = filter_input(INPUT_POST, 'authorPostModify', FILTER_SANITIZE_STRING);
         $chapoPostModify = filter_input(INPUT_POST, 'chapoPostModify', FILTER_SANITIZE_STRING);
         $req = $this->dbConnect->prepare('
         UPDATE post
-        SET post_Date_Modif = NOW(),   post_Heading  = :post_heading, post_Chapo = :post_chapo, post_Content = :post_content, post_Author = :post_author
+        SET post_Date_Modif = NOW(),   post_Heading  = :post_heading, post_Chapo = :post_chapo, post_Content = :post_content
         WHERE id = :id
         ');
         $req->execute(
             [
                 "post_heading" => $headingPostModify,
                 "post_content" => $contentPostModify,
-                "post_author" => $authorPostModify,
                 "post_chapo" => $chapoPostModify,
                 "id" => $idPostUser
             ]
